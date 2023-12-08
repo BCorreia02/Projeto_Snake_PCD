@@ -41,6 +41,8 @@ public class BoardComponentClient extends JComponent implements KeyListener {
 		addKeyListener(this);
 	}
 
+
+	
 	public void setNewList(List<Pacote> p) {
 		this.pacotes = p;
 		repaint();
