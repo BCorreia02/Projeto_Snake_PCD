@@ -6,7 +6,7 @@ import environment.BoardPosition;
 
 public class AutomaticSnake extends Snake {
 
-    public AutomaticSnake(int id, LocalBoard board) {
+    public AutomaticSnake(int id, Board board) {
         super(id, board);
     }
 
@@ -41,5 +41,10 @@ public class AutomaticSnake extends Snake {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean isHumanSnake() {
+        return false;
     }
 }

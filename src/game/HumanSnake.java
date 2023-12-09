@@ -1,6 +1,7 @@
 package game;
 
 import environment.Board;
+import environment.BoardPosition;
 
 /**
  * Class for a remote snake, controlled by a human
@@ -8,7 +9,7 @@ import environment.Board;
  * @author luismota
  *
  */
-public abstract class HumanSnake extends Snake {
+public class HumanSnake extends Snake {
 
 	public HumanSnake(int id, Board board) {
 		super(id, board);
@@ -19,13 +20,33 @@ public abstract class HumanSnake extends Snake {
 
 		System.err.println("initial size:" + cells.size());
 		try {
-			doInitialPositioning();
-			cells.getLast().request(this);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			
+            doInitialPositioning();
+            Thread.sleep(2000);
+            while (getBoard().getGoalValue() < 10) {
 
+                try {
+                  
+                    move();
+                    getBoard().setChanged();
+                    
+
+                    Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
+
+				} catch (Exception e) {
+                    System.err.println(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+	@Override
+	public boolean isHumanSnake() {
+		return true;
 	}
 
 }

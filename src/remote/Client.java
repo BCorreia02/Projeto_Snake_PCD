@@ -1,5 +1,6 @@
 package remote;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,6 +8,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
+import environment.Cell;
 import game.Server;
 import gui.BoardComponent;
 import utils.Direction;
@@ -39,8 +41,8 @@ public class Client {
 			connectToServer();
 
 			cgui.init();
-			System.out.println("GUI INICIADA");
 			handleConnection();
+			
 		} catch (ClassNotFoundException | IOException e) {
 		} finally {
 			in.close();
@@ -56,14 +58,17 @@ public class Client {
 	}
 
 	public void handleConnection() throws IOException, ClassNotFoundException {
-
+	System.out.println("handleConnection");
 		while (true) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
 			handleRcvPacote();
+			System.out.println("GameState tratado");
 			handleSend();
+			System.out.println("Direcao enviada");
 		}
 	}
 
 	public void handleRcvPacote() throws ClassNotFoundException, IOException {
+		
 		GameState estado = (GameState) in.readObject(); // le GameState recebido e atualiza a gui consoante os dados de
 														// cada Pacote incluidos na GameState recebida
 		List<Pacote> recebido = estado.getPacotes();
@@ -73,11 +78,12 @@ public class Client {
 	}
 
 	public void handleSend() throws IOException { // envio numa thread separada
-		Direction d = cgui.getBoardClient().getLastPressedDirection();
-		System.out.println(d);
-		out.writeObject(d);
+		String c = cgui.getBoardClient().getLastPressedDirection(); 
+		System.out.println(c);
+		out.writeObject(c);
 		out.flush();
 		cgui.getBoardClient().getLastPressedDirection();
+		System.out.println("enviei");
 
 	}
 

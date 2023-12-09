@@ -23,7 +23,7 @@ import game.Snake;
  * @author luismota
  *
  */
-public class SnakeGui implements Observer {
+public class SnakeGui extends Thread implements Observer {
 	public static final int BOARD_WIDTH = 800;
 	public static final int BOARD_HEIGHT = 800;
 	public static final int NUM_COLUMNS = 40;
@@ -34,10 +34,18 @@ public class SnakeGui implements Observer {
 
 	public SnakeGui(Board board, int x, int y) {
 		super();
+		if (board == null) {
+            throw new IllegalArgumentException("Board cannot be null");
+        }
+		
 		this.board = board;
 		frame = new JFrame("The Snake Game: " + (board instanceof LocalBoard ? "Local" : "Remote"));
 		frame.setLocation(x, y);
 		buildGui();
+	}
+
+	public Board getBoard(){
+		return board;
 	}
 
 	private void buildGui() {
@@ -65,9 +73,16 @@ public class SnakeGui implements Observer {
 	}
 
 	public void init() {
+		if (board == null) {
+            throw new IllegalStateException("Board is not initialized");
+        }
 		frame.setVisible(true);
 		board.addObserver(this);
 		board.init();
+	}	
+
+	public void run() {
+		init();
 	}
 
 	@Override

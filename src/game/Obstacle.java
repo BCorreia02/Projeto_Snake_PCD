@@ -29,6 +29,10 @@ public class Obstacle extends GameElement {
 		this.current = pos;
 	}
 
+	public BoardPosition getCurrent(){
+		return current;
+	}
+
 	public int getRemainingMoves() {
 		return remainingMoves;
 	}

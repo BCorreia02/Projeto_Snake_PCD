@@ -8,10 +8,10 @@ import environment.LocalBoard;
 
 public class ObstacleMover extends Thread {
 
-	private static LocalBoard board;
+	private static Board board;
 	private ExecutorService service;
 
-	public ObstacleMover(LocalBoard board, int num) {
+	public ObstacleMover(Board board, int num) {
 		super();
 		this.board = board;
 		service = Executors.newFixedThreadPool(num);

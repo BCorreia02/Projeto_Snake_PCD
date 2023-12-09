@@ -1,10 +1,12 @@
 package game;
 
 import environment.Board;
+import environment.BoardPosition;
 
 public class Goal extends GameElement {
 	private int value = 1;
 	private Board board;
+	
 	public static final int MAX_VALUE = 10;
 
 	public Goal(Board board) {
@@ -29,4 +31,6 @@ public class Goal extends GameElement {
 		board.addGameElement(new Goal(board)); // Adiciona um novo prêmio
 		return this.value;
 	}
+
+
 }

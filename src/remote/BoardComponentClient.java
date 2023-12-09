@@ -8,20 +8,16 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import environment.Board;
 import environment.BoardPosition;
 import environment.Cell;
-import environment.LocalBoard;
 import game.Goal;
-import game.HumanSnake;
 import game.Obstacle;
-import game.Snake;
-import gui.SnakeGui;
 import utils.Direction;
 
 public class BoardComponentClient extends JComponent implements KeyListener {
@@ -33,6 +29,7 @@ public class BoardComponentClient extends JComponent implements KeyListener {
 	private GameState gs;
 	private boolean method;
 	private List<Pacote> pacotes;
+	private String lastDirection;
 
 	public BoardComponentClient(Boolean method) {
 		obstacleImage = new ImageIcon(getClass().getResource("/obstacle.png")).getImage();
@@ -67,58 +64,82 @@ public class BoardComponentClient extends JComponent implements KeyListener {
 					return;
 				}
 
-				Cell cell = cgui.getCell(new BoardPosition(x, y));
+				// Cell cell = cgui.getCell(new BoardPosition(x, y));
+
+			if (this.pacotes!=null){
+				for (Pacote p : pacotes){
 				Image image = null;
-				if (cell.getGameElement() != null)
-					if (cell.getGameElement() instanceof Obstacle) {
-						Obstacle obstacle = (Obstacle) cell.getGameElement();
-						image = obstacleImage;
-						g.setColor(Color.BLACK);
-						g.drawImage(image, (int) Math.round(cell.getPosition().x * CELL_WIDTH),
-								(int) Math.round(cell.getPosition().y * CELL_WIDTH),
-								(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH), null);
-						// write number of remaining moves
-						g.setColor(Color.WHITE);
-						g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
-						g.drawString(obstacle.getRemainingMoves() + "",
-								(int) Math.round((cell.getPosition().x + 0.15) * CELL_WIDTH),
-								(int) Math.round((cell.getPosition().y + 0.9) * CELL_WIDTH));
-					} else if (cell.getGameElement() instanceof Goal) {
-						Goal goal = (Goal) cell.getGameElement();
+				// if (cell.getGameElement() != null)
+					if(p.getObjectType() == Pacote.ObjectType.OBSTACLE){
+						LinkedList<Obstacle> obList = p.getObstacles();
+						for (int i=0; i!= obList.size();i++){
+
+							Obstacle obstacle = obList.get(i);
+							int ObstacleX = obstacle.getCurrent().x;
+							int ObstacleY = obstacle.getCurrent().y;
+							image = obstacleImage;
+
+							g.setColor(Color.BLACK);
+							g.drawImage(image, (int) Math.round(ObstacleX * CELL_WIDTH),
+									(int) Math.round(ObstacleY * CELL_WIDTH),
+									(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH), null);
+							// write number of remaining moves
+							g.setColor(Color.WHITE);
+							g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
+							g.drawString(obstacle.getRemainingMoves() + "",
+									(int) Math.round((ObstacleX + 0.15) * CELL_WIDTH),
+									(int) Math.round((ObstacleY + 0.9) * CELL_WIDTH));
+					}} else if (p.getObjectType() == Pacote.ObjectType.GOAL) {
+
+						Goal goal = p.getGoal();
+						BoardPosition goalPos = p.getGoalPosition();
+						int goalX = goalPos.x;
+						int goalY = goalPos.y;
+
 						g.setColor(Color.RED);
 						g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
-						g.drawString(goal.getValue() + "", (int) Math.round((cell.getPosition().x + 0.15) * CELL_WIDTH),
-								(int) Math.round((cell.getPosition().y + 0.9) * CELL_WIDTH));
+						g.drawString(goal.getValue() + "", (int) Math.round((goalX + 0.15) * CELL_WIDTH),
+								(int) Math.round((goalY + 0.9) * CELL_WIDTH));
 					}
-				if (cell.isOcupiedBySnake()) {
+				if (p.getObjectType() == Pacote.ObjectType.SNAKE) {
+					
 					// different color for human player...
-					if (cell.getOcuppyingSnake() instanceof HumanSnake)
+					if (p.getisHuman())
 						g.setColor(Color.ORANGE);
-					else
+					else if(!p.getisHuman())
 						g.setColor(Color.LIGHT_GRAY);
-					g.fillRect((int) Math.round(cell.getPosition().x * CELL_WIDTH),
-							(int) Math.round(cell.getPosition().y * CELL_WIDTH),
-							(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH));
+					LinkedList<Cell> snake = p.getCells();
+					for (int i=0; i!=snake.size();i++){
 
+							Cell bloco = snake.get(i);
+							int blocoX = bloco.getPosition().x;
+							int blocoY = bloco.getPosition().y;
+
+							g.fillRect((int) Math.round(blocoX * CELL_WIDTH),
+									(int) Math.round(blocoY * CELL_WIDTH),
+									(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH));
+		}
 				}
 
 				// }
-			}
+			
 			g.setColor(Color.BLACK);
 			g.drawLine((int) Math.round(x * CELL_WIDTH), 0, (int) Math.round(x * CELL_WIDTH),
-					(int) Math.round(LocalBoard.NUM_ROWS * CELL_WIDTH));
+					(int) Math.round(RemoteBoard.NUM_ROWS * CELL_WIDTH));
+		
+		for (int y1 = 1; y1 < RemoteBoard.NUM_ROWS; y1++) {
+			g.drawLine(0, (int) Math.round(y1 * CELL_WIDTH), (int) Math.round(RemoteBoard.NUM_COLUMNS * CELL_WIDTH),
+					(int) Math.round(y1 * CELL_WIDTH));
 		}
-		for (int y = 1; y < LocalBoard.NUM_ROWS; y++) {
-			g.drawLine(0, (int) Math.round(y * CELL_WIDTH), (int) Math.round(LocalBoard.NUM_COLUMNS * CELL_WIDTH),
-					(int) Math.round(y * CELL_WIDTH));
-		}
-		for (Snake s : cgui.getSnakes()) {
-			if (s.getLength() > 0) {
-				g.setColor(new Color(s.getIdentification() * 1000));
 
+		if (p.getObjectType() == Pacote.ObjectType.SNAKE){
+			LinkedList<Cell> pedacos = p.getCells();
+			if (pedacos.size() > 0) {
+				g.setColor(new Color(p.getId() * 1000));
+				
 				((Graphics2D) g).setStroke(new BasicStroke(5));
-				BoardPosition prevPos = s.getPath().getFirst();
-				for (BoardPosition coordinate : s.getPath()) {
+				BoardPosition prevPos = p.getPath().getFirst();
+				for (BoardPosition coordinate : p.getPath()) {
 					if (prevPos != null) {
 						g.drawLine((int) Math.round((prevPos.x + .5) * CELL_WIDTH),
 								(int) Math.round((prevPos.y + .5) * CELL_WIDTH),
@@ -131,16 +152,38 @@ public class BoardComponentClient extends JComponent implements KeyListener {
 			}
 		}
 	}
+}
+}
+	}
+	}
 
 	// Only for remote clients: 2. part of the project
 	// Methods keyPressed and keyReleased will react to user pressing and
 	// releasing keys on the keyboard.
 	@Override
 	public void keyPressed(KeyEvent e) {
+
+		// if(!this.method){
+		// }
+
 		System.out.println("Got key pressed.");
 		if (e.getKeyCode() != KeyEvent.VK_LEFT && e.getKeyCode() != KeyEvent.VK_RIGHT &&
 				e.getKeyCode() != KeyEvent.VK_UP && e.getKeyCode() != KeyEvent.VK_DOWN)
 			return; // ignore
+			switch(e.getKeyCode()){	
+				case  KeyEvent.VK_LEFT:
+					lastDirection = "LEFT";
+					break;
+				case  KeyEvent.VK_RIGHT:
+					lastDirection = "RIGHT";
+					break;
+				case KeyEvent.VK_UP:
+					lastDirection = "UP";
+					break;
+				case KeyEvent.VK_DOWN:
+					lastDirection = "DOWN";
+					break;
+				}
 		cgui.handleKeyPress(e.getKeyCode());
 
 	}
@@ -160,7 +203,7 @@ public class BoardComponentClient extends JComponent implements KeyListener {
 		// ignore
 	}
 
-	public Direction getLastPressedDirection() {
-		return null;
+	public String getLastPressedDirection() {
+		return lastDirection;
 	}
 }

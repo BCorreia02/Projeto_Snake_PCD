@@ -1,5 +1,6 @@
 package environment;
 
+import java.rmi.server.RemoteStub;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +11,9 @@ import game.Goal;
 import game.Obstacle;
 import game.ObstacleMover;
 import game.Snake;
+import remote.GameState;
+import remote.Pacote;
+import remote.Pacote.ObjectType;
 
 public abstract class Board extends Observable {
 
@@ -118,6 +122,18 @@ public abstract class Board extends Observable {
 		return false;
 	}
 
+	public Goal getActiveGoal() {
+		for (int x = 0; x < NUM_COLUMNS; x++) {
+			for (int y = 0; y < NUM_ROWS; y++) {
+				if (cells[x][y].getGameElement() instanceof Goal) {
+					return (Goal) cells[x][y].getGameElement();
+				}
+			}
+		}
+		return null;
+	}
+
+
 	public List<BoardPosition> getNeighboringPositions(Cell cell) {
 		ArrayList<BoardPosition> possiblePos = new ArrayList<BoardPosition>();
 		BoardPosition pos = cell.getPosition();
@@ -172,6 +188,35 @@ public abstract class Board extends Observable {
 			}
 		}
 		return closest;
+	}
+
+	public GameState EstadoJogo() {
+		List<Pacote> infoPlayers = new ArrayList<Pacote>();
+
+		//meter os dados de cada snake num pacote
+		for (Snake snake : snakes) {
+			Pacote packet = new Pacote(snake.getIdentification(), snake.getCells(), snake.getSize(), snake.isHumanSnake(),snake.getPath(), Pacote.ObjectType.SNAKE);
+			infoPlayers.add(packet);
+		}
+
+		//meter goal num pacote
+		Goal goal = getActiveGoal();
+		BoardPosition goalPos = getGoalPosition();
+		int GoalValue = getGoalValue();
+		
+		Pacote goalPacket = new Pacote(goal,goalPos,GoalValue, Pacote.ObjectType.GOAL);
+		infoPlayers.add(goalPacket);
+
+		//meter obstacles no pacote
+		LinkedList<Obstacle> o = obstacles;
+		Pacote obstaclePacket = new Pacote(o,Pacote.ObjectType.OBSTACLE);
+
+		infoPlayers.add(obstaclePacket);
+
+
+		GameState estado = new GameState(infoPlayers);
+		// se um jogador morrer, remover da lista
+		return estado;
 	}
 
 	// Método para calcular a distância entre duas posições
