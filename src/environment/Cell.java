@@ -19,7 +19,7 @@ import game.Snake;
  * @author luismota
  *
  */
-public class Cell {
+public class Cell implements Serializable {
 
 	private Lock lock = new ReentrantLock();
 	private Condition cellOccupied = lock.newCondition();

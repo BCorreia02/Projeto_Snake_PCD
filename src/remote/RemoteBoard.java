@@ -34,14 +34,11 @@ public class RemoteBoard extends Board {
 	private static final int NUM_OBSTACLES = 10;
 	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 5;
 
-
 	public RemoteBoard(BoardComponentClient boardComponentClient) {
 		this.boardComponentClient = boardComponentClient;
 		buildGui();
 
-
-		
-	for (int i = 0; i < NUM_SNAKES; i++) {
+		for (int i = 0; i < NUM_SNAKES; i++) {
 			AutomaticSnake snake = new AutomaticSnake(i, this);
 			snakes.add(snake);
 		}
@@ -57,18 +54,17 @@ public class RemoteBoard extends Board {
 	}
 
 	private void buildGui() {
-		
+
 		frame.add(boardComponentClient);
 
-		frame.setSize(800,800);
+		frame.setSize(800, 800);
 		frame.setLocation(0, 150);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 	}
 
 	@Override
-	public void init() { //startar RemoteBoard
-		frame.setVisible(true);
+	public void init() { // startar RemoteBoard
 		for (Snake s : snakes)
 			s.start();
 
@@ -93,13 +89,13 @@ public class RemoteBoard extends Board {
 		// TODO - idk
 	}
 
-
 	public BoardComponentClient getBoardClient() {
 		return boardComponentClient;
 	}
 
 	public void atualiza(List<Pacote> recebido) {
-		boardComponentClient.repaint();
+		this.boardComponentClient.setNewList(recebido);
+
 	}
 
 }

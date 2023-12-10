@@ -2,9 +2,10 @@ package game;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 
-public class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable, Serializable {
     private Socket socket;
     private ObjectInputStream input;
     private ObjectOutputStream output;

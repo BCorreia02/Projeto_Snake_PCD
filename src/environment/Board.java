@@ -1,5 +1,6 @@
 package environment;
 
+import java.io.Serializable;
 import java.rmi.server.RemoteStub;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -15,7 +16,7 @@ import remote.GameState;
 import remote.Pacote;
 import remote.Pacote.ObjectType;
 
-public abstract class Board extends Observable {
+public abstract class Board extends Observable implements Serializable {
 
 	protected Cell[][] cells;
 	private BoardPosition goalPosition;
@@ -133,7 +134,6 @@ public abstract class Board extends Observable {
 		return null;
 	}
 
-
 	public List<BoardPosition> getNeighboringPositions(Cell cell) {
 		ArrayList<BoardPosition> possiblePos = new ArrayList<BoardPosition>();
 		BoardPosition pos = cell.getPosition();
@@ -193,26 +193,26 @@ public abstract class Board extends Observable {
 	public GameState EstadoJogo() {
 		List<Pacote> infoPlayers = new ArrayList<Pacote>();
 
-		//meter os dados de cada snake num pacote
+		// meter os dados de cada snake num pacote
 		for (Snake snake : snakes) {
-			Pacote packet = new Pacote(snake.getIdentification(), snake.getCells(), snake.getSize(), snake.isHumanSnake(),snake.getPath(), Pacote.ObjectType.SNAKE);
+			Pacote packet = new Pacote(snake.getIdentification(), snake.getCells(), snake.getSize(),
+					snake.isHumanSnake(), snake.getPath(), Pacote.ObjectType.SNAKE);
 			infoPlayers.add(packet);
 		}
 
-		//meter goal num pacote
+		// meter goal num pacote
 		Goal goal = getActiveGoal();
 		BoardPosition goalPos = getGoalPosition();
 		int GoalValue = getGoalValue();
-		
-		Pacote goalPacket = new Pacote(goal,goalPos,GoalValue, Pacote.ObjectType.GOAL);
+
+		Pacote goalPacket = new Pacote(goal, goalPos, GoalValue, Pacote.ObjectType.GOAL);
 		infoPlayers.add(goalPacket);
 
-		//meter obstacles no pacote
+		// meter obstacles no pacote
 		LinkedList<Obstacle> o = obstacles;
-		Pacote obstaclePacket = new Pacote(o,Pacote.ObjectType.OBSTACLE);
+		Pacote obstaclePacket = new Pacote(o, Pacote.ObjectType.OBSTACLE);
 
 		infoPlayers.add(obstaclePacket);
-
 
 		GameState estado = new GameState(infoPlayers);
 		// se um jogador morrer, remover da lista

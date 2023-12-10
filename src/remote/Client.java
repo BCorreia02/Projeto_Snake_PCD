@@ -11,6 +11,7 @@ import java.util.List;
 import environment.Cell;
 import game.Server;
 import gui.BoardComponent;
+import gui.SnakeGui;
 import utils.Direction;
 
 /**
@@ -29,21 +30,22 @@ public class Client {
 	private RemoteBoard cgui;
 	private InetAddress ip;
 	private boolean method;
+	private SnakeGui gui;
 
-	Client(InetAddress ip, boolean method) {
+	Client(InetAddress ip, boolean method) throws IOException {
 		this.ip = ip;
 		this.method = method;
 		this.cgui = new RemoteBoard(new BoardComponentClient(method));
+		cgui.init();
+		// Removed the line that gets the server instance and starts the GUI.
 	}
 
 	public void runClient() throws IOException {
 		try {
 			connectToServer();
-
-			cgui.init();
 			handleConnection();
-			
 		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
 		} finally {
 			in.close();
 			out.close();
@@ -58,7 +60,7 @@ public class Client {
 	}
 
 	public void handleConnection() throws IOException, ClassNotFoundException {
-	System.out.println("handleConnection");
+		System.out.println("handleConnection");
 		while (true) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
 			handleRcvPacote();
 			System.out.println("GameState tratado");
@@ -68,7 +70,7 @@ public class Client {
 	}
 
 	public void handleRcvPacote() throws ClassNotFoundException, IOException {
-		
+
 		GameState estado = (GameState) in.readObject(); // le GameState recebido e atualiza a gui consoante os dados de
 														// cada Pacote incluidos na GameState recebida
 		List<Pacote> recebido = estado.getPacotes();
@@ -78,7 +80,7 @@ public class Client {
 	}
 
 	public void handleSend() throws IOException { // envio numa thread separada
-		String c = cgui.getBoardClient().getLastPressedDirection(); 
+		String c = cgui.getBoardClient().getLastPressedDirection();
 		System.out.println(c);
 		out.writeObject(c);
 		out.flush();
