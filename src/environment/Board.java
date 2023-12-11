@@ -7,15 +7,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.ConcurrentHashMap;
+
 import game.GameElement;
 import game.Goal;
 import game.Obstacle;
 import game.ObstacleMover;
 import game.Snake;
-import remote.GameState;
-import remote.Pacote;
-import remote.Pacotev1;
-import remote.Pacote.ObjectType;
 
 public abstract class Board extends Observable implements Serializable {
 
@@ -29,7 +27,7 @@ public abstract class Board extends Observable implements Serializable {
 	protected LinkedList<Obstacle> obstacles = new LinkedList<Obstacle>();
 	public ObstacleMover obstacleMover;
 	public int goalValue = 1;
-	HashMap<BoardPosition, CellContent> boardMap = new HashMap<>();
+	ConcurrentHashMap<BoardPosition, CellContent> boardMap = new ConcurrentHashMap<>();
 
 	public Board() {
 		cells = new Cell[NUM_COLUMNS][NUM_ROWS];
@@ -53,7 +51,7 @@ public abstract class Board extends Observable implements Serializable {
 		return blocked;
 	}
 
-	public HashMap<BoardPosition, CellContent> getHashMap() {
+	public ConcurrentHashMap<BoardPosition, CellContent> getHashMap() {
 		makeHashMap();
 		return boardMap;
 	}
@@ -212,14 +210,14 @@ public abstract class Board extends Observable implements Serializable {
 		return closest;
 	}
 
-	public GameState EstadoJogo() {
-		List<Pacotev1> infoPlayers = new ArrayList<Pacotev1>();
-		HashMap<BoardPosition, CellContent> map = getHashMap();
-		Pacotev1 pacote = new Pacotev1(map);
-		infoPlayers.add(pacote);
-		GameState estado = new GameState(infoPlayers);
+	public ConcurrentHashMap<BoardPosition, CellContent> getGameState() {
+		// List<Pacotev1> infoPlayers = new ArrayList<Pacotev1>();
+		ConcurrentHashMap<BoardPosition, CellContent> map = getHashMap();
+		// Pacotev1 pacote = new Pacotev1(map);
+		// infoPlayers.add(pacote);
+		// GameState estado = new GameState(infoPlayers);
 		// se um jogador morrer, remover da lista
-		return estado;
+		return map;
 	}
 
 	// Método para calcular a distância entre duas posições

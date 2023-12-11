@@ -8,15 +8,17 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import environment.Board;
 import environment.BoardPosition;
 import environment.Cell;
+import environment.CellContent;
+import environment.LocalBoard;
 import gui.BoardComponent;
 import gui.SnakeGui;
 import javafx.scene.input.KeyEvent;
 import remote.BoardComponentClient;
-import remote.GameState;
 import remote.RemoteBoard;
 
 public class Server {
@@ -28,7 +30,6 @@ public class Server {
 	private ObjectOutputStream out; // deixou de estar = null
 	private Board board;
 	private SnakeGui gui;
-	private BoardComponentClient bcc;
 
 	private int id = 100;
 	private List<ObjectOutputStream> outs = Collections.synchronizedList(new ArrayList<ObjectOutputStream>());
@@ -36,8 +37,7 @@ public class Server {
 
 	public Server() throws IOException {
 		this.ss = new ServerSocket(port);
-		this.bcc = new BoardComponentClient(null);
-		this.board = new RemoteBoard(bcc, false);
+		this.board = new LocalBoard();
 		this.gui = new SnakeGui(board, 600, 0);
 		gui.start(); // a SnakeGui e uma thread portanto executa o que esta dentro do run(init)
 
@@ -67,16 +67,17 @@ public class Server {
 		try {
 
 			while (!ss.isClosed()) {
-				System.out.println("entrei no ciclo");
 				Socket s = ss.accept();
 
-				System.out.println("iniciei o servidor");
+				System.out.println("Ligacao feita");
 
 				ClientHandler ch = new ClientHandler(s);
 				GameUpdater gu = new GameUpdater(s);
-
+				System.out.println("gameupdater criado");
 				gu.start();
+				System.out.println("gameupdater iniciado");
 				ch.start();
+				System.out.println("clienthandler iniciado");
 
 			}
 		} finally {
@@ -112,19 +113,18 @@ public class Server {
 		private HumanSnake hs;
 
 		ClientHandler(Socket socket) throws ClassNotFoundException, IOException, InterruptedException {
+			
 			this.clientSocket = socket;
-			this.initializeChannels(this.clientSocket);
+			in = new ObjectInputStream(this.clientSocket.getInputStream());
 			HumanSnake hs = new HumanSnake(id, board); /// while (true) englobava as a criacao de um HumanPlayer -errado
 														/// pq por cada cliente que se liga ao servidor apenas � criado
 														/// um humanplayer
 			id++;
 			board.addSnake(hs);
 			this.hs = hs;
+			System.out.println("cliente ligado");
 		}
 
-		public void initializeChannels(Socket sock) throws IOException, ClassNotFoundException {
-			in = new ObjectInputStream(sock.getInputStream());
-		}
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
 			while (!clientSocket.isClosed()) {
@@ -194,10 +194,10 @@ public class Server {
 			outs.add(out);
 		}
 
-		private void updateGameState(GameState games) {
+		private void updateMaps(ConcurrentHashMap<BoardPosition, CellContent> map) {
 			for (ObjectOutputStream out : outs)
 				try {
-					out.writeObject(games);
+					out.writeObject(map);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -206,9 +206,8 @@ public class Server {
 		public void handleOuts() throws ClassNotFoundException, IOException, InterruptedException {
 
 			while (!Thread.interrupted()) {
-				GameState estado = board.EstadoJogo();
-				updateGameState(estado);
-				board.setChanged();
+				
+				updateMaps(board.getHashMap());
 				out.flush();
 				Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
 			}

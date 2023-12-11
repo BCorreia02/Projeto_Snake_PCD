@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -33,22 +34,23 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 	private Image obstacleImage;
 	public static final int NUM_ROWS = 30;
 	public static final int NUM_COLUMNS = 30;
-	private RemoteBoard cgui;
-	private GameState gs;
+	private RemoteBoard board;
 	private boolean method;
-	private List<Pacotev1> pacotes;
 	private String lastDirection;
+	private ConcurrentHashMap<BoardPosition, CellContent> boardMap;
 
-	public BoardComponentClient(Boolean method) {
+
+	public BoardComponentClient(RemoteBoard board,Boolean method) {
+		this.board = board;
 		obstacleImage = new ImageIcon(getClass().getResource("/obstacle.png")).getImage();
 		// Necessary for key listener
 		setFocusable(true);
 		addKeyListener(this);
 	}
 
-	public void setNewList(List<Pacotev1> p) {
-		this.pacotes = p;
-		repaint();
+	public void setNewMap(ConcurrentHashMap<BoardPosition, CellContent> mapa) {
+		this.boardMap = mapa;
+		// repaint();
 	}
 
 	// MODIFICAR paintComponent de maneira a que em vez de ele ir buscar Cells e
@@ -59,13 +61,11 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 
 	@Override
 	protected void paintComponent(Graphics g) {
+		System.out.println(boardMap);
 		super.paintComponent(g);
 		final double CELL_WIDTH = getHeight() / (double) NUM_COLUMNS;
 
-		if (this.pacotes != null) {
-			for (Pacotev1 p : pacotes) {
-
-				HashMap<BoardPosition, CellContent> boardMap = p.getBoardMap();
+		if (this.boardMap != null) {
 
 				for (Map.Entry<BoardPosition, CellContent> entry : boardMap.entrySet()) {
 
@@ -158,7 +158,7 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 						}
 					}
 				}
-			}
+			
 		}
 	}
 
@@ -189,7 +189,7 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 				lastDirection = "DOWN";
 				break;
 		}
-		cgui.handleKeyPress(e.getKeyCode());
+		board.handleKeyPress(e.getKeyCode());
 
 	}
 
@@ -200,7 +200,7 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 			return; // ignore
 
 		System.out.println("Got key released.");
-		cgui.handleKeyRelease();
+		board.handleKeyRelease();
 	}
 
 	@Override

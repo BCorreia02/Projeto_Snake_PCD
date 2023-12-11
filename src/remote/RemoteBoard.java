@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.JFrame;
 
@@ -13,6 +14,7 @@ import environment.LocalBoard;
 import environment.Board;
 import environment.BoardPosition;
 import environment.Cell;
+import environment.CellContent;
 import game.AutomaticSnake;
 import game.Goal;
 import game.Obstacle;
@@ -39,22 +41,22 @@ public class RemoteBoard extends Board implements Serializable {
 		this.boardComponentClient = boardComponentClient;
 		buildGui();
 
-		if (!cliente) {
-			for (int i = 0; i < NUM_SNAKES; i++) {
-				AutomaticSnake snake = new AutomaticSnake(i, this);
-				snakes.add(snake);
-			}
+		// if (!cliente) {
+		// 	for (int i = 0; i < NUM_SNAKES; i++) {
+		// 		AutomaticSnake snake = new AutomaticSnake(i, this);
+		// 		snakes.add(snake);
+		// 	}
 
-			addObstacles(NUM_OBSTACLES);
+		// 	addObstacles(NUM_OBSTACLES);
 
-			obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
+		// 	obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
 
-			for (Obstacle obstacle : obstacles) { // Assuming 'obstacles' is a List of Obstacle
-				obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
-			}
-		}
+		// 	for (Obstacle obstacle : obstacles) { // Assuming 'obstacles' is a List of Obstacle
+		// 		obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
+		// 	}
+		// }
 
-		addGoal();
+		// addGoal();
 	}
 
 	private void buildGui() {
@@ -69,19 +71,19 @@ public class RemoteBoard extends Board implements Serializable {
 
 	@Override
 	public void init() { // startar RemoteBoard
-		for (Snake s : snakes)
-			s.start();
+		// for (Snake s : snakes)
+		// 	s.start();
 
-		obstacleMover.start();
+		// obstacleMover.start();
 		setChanged();
 	}
 
-	public Obstacle getObstacle(Obstacle obstacle) {
-		for (Obstacle a : obstacles)
-			if (obstacle.equals(a))
-				return a;
-		return null;
-	}
+	// public Obstacle getObstacle(Obstacle obstacle) {
+	// 	for (Obstacle a : obstacles)
+	// 		if (obstacle.equals(a))
+	// 			return a;
+	// 	return null;
+	// }
 
 	@Override
 	public void handleKeyPress(int keyCode) {
@@ -97,8 +99,8 @@ public class RemoteBoard extends Board implements Serializable {
 		return boardComponentClient;
 	}
 
-	public void atualiza(List<Pacotev1> recebido) {
-		this.boardComponentClient.setNewList(recebido);
+	public void atualiza(ConcurrentHashMap<BoardPosition, CellContent> mapa) {
+		this.boardComponentClient.setNewMap(mapa);
 
 	}
 

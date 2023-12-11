@@ -7,10 +7,10 @@ import java.util.concurrent.Executors;
 import environment.Board;
 import environment.LocalBoard;
 
-public class ObstacleMover extends Thread {
+public class ObstacleMover extends Thread implements Serializable {
 
-	private static Board board;
-	private ExecutorService service;
+	private transient Board board;
+	private transient ExecutorService service;
 
 	public ObstacleMover(Board board, int num) {
 		super();
@@ -26,7 +26,7 @@ public class ObstacleMover extends Thread {
 		return board;
 	}
 
-	public static class Task implements Runnable {
+	public static class Task implements Runnable{
 
 		private Obstacle obstacle;
 
