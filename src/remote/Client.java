@@ -35,16 +35,14 @@ public class Client {
 	Client(InetAddress ip, boolean method) throws IOException {
 		this.ip = ip;
 		this.method = method;
-		// this.cgui = new RemoteBoard(new BoardComponentClient(method),true);
-		// this.gui= Server.getInstance().getGame();
-		// this.gui = new SnakeGui(cgui,600 , 0);
-		// gui.start();
+		this.cgui = new RemoteBoard(new BoardComponentClient(method), true);
+		this.gui = new SnakeGui(cgui, 0, 0);
 	}
 
 	public void runClient() throws IOException {
 		try {
 			connectToServer();
-			cgui.init();
+			gui.init();
 			handleConnection();
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -57,8 +55,10 @@ public class Client {
 
 	public void connectToServer() throws IOException {
 		cliente = new Socket(ip, PORTO);
-		in = new ObjectInputStream(cliente.getInputStream());
 		out = new ObjectOutputStream(cliente.getOutputStream());
+		out.flush();
+		in = new ObjectInputStream(cliente.getInputStream());
+
 	}
 
 	public void handleConnection() throws IOException, ClassNotFoundException {

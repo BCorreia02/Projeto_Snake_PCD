@@ -59,16 +59,14 @@ public abstract class Board extends Observable implements Serializable {
 	}
 
 	public void makeHashMap() {
-
 		for (int i = 0; i < cells.length; i++) {
 			for (int j = 0; j < cells.length; j++) {
 				BoardPosition position = new BoardPosition(i, j);
 				Cell cell = cells[i][j];
-				// Extracting information from the cell
-				GameElement gameElement = cell.getGameElement(); // Assuming a method to get the GameElement
-				Snake snake = cell.getOcuppyingSnake(); // Assuming a method to get the Snake
 
-				// Create a CellContent object and put it in the map
+				GameElement gameElement = cell.getGameElement();
+				Snake snake = cell.getOcuppyingSnake();
+
 				CellContent cellContent = new CellContent(gameElement, snake);
 				boardMap.put(position, cellContent);
 			}

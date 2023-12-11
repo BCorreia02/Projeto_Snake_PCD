@@ -120,7 +120,6 @@ public class Server {
 			id++;
 			board.addSnake(hs);
 			this.hs = hs;
-
 		}
 
 		public void initializeChannels(Socket sock) throws IOException, ClassNotFoundException {
@@ -206,7 +205,7 @@ public class Server {
 
 		public void handleOuts() throws ClassNotFoundException, IOException, InterruptedException {
 
-			while (true) {
+			while (!Thread.interrupted()) {
 				GameState estado = board.EstadoJogo();
 				updateGameState(estado);
 				board.setChanged();
