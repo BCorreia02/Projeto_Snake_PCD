@@ -27,7 +27,7 @@ import game.Snake;
  * @author luismota
  *
  */
-public class RemoteBoard extends Board implements Serializable{
+public class RemoteBoard extends Board implements Serializable {
 
 	private JFrame frame = new JFrame("cliente");
 	private BoardComponentClient boardComponentClient;
@@ -39,22 +39,21 @@ public class RemoteBoard extends Board implements Serializable{
 		this.boardComponentClient = boardComponentClient;
 		buildGui();
 
-		if (!cliente){
-		for (int i = 0; i < NUM_SNAKES; i++) {
-			AutomaticSnake snake = new AutomaticSnake(i, this);
-			snakes.add(snake);
+		if (!cliente) {
+			for (int i = 0; i < NUM_SNAKES; i++) {
+				AutomaticSnake snake = new AutomaticSnake(i, this);
+				snakes.add(snake);
+			}
+
+			addObstacles(NUM_OBSTACLES);
+
+			obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
+
+			for (Obstacle obstacle : obstacles) { // Assuming 'obstacles' is a List of Obstacle
+				obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
+			}
 		}
 
-		addObstacles(NUM_OBSTACLES);
-
-		obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
-
-		for (Obstacle obstacle : obstacles) { // Assuming 'obstacles' is a List of Obstacle
-			obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
-		}
-		}
-		
-	
 		addGoal();
 	}
 
@@ -69,7 +68,7 @@ public class RemoteBoard extends Board implements Serializable{
 	}
 
 	@Override
-	public void init() { //startar RemoteBoard
+	public void init() { // startar RemoteBoard
 		for (Snake s : snakes)
 			s.start();
 
@@ -98,10 +97,9 @@ public class RemoteBoard extends Board implements Serializable{
 		return boardComponentClient;
 	}
 
-	public void atualiza(List<Pacote> recebido) {
+	public void atualiza(List<Pacotev1> recebido) {
 		this.boardComponentClient.setNewList(recebido);
 
-		
 	}
 
 }

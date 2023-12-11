@@ -73,8 +73,6 @@ public abstract class Snake extends Thread implements Serializable {
 
 	public abstract boolean isHumanSnake();
 
-	
-
 	public BoardPosition getNewTargetedPos(boolean reset) {
 
 		BoardPosition goalPosition = getBoard().getGoalPosition();
@@ -118,19 +116,22 @@ public abstract class Snake extends Thread implements Serializable {
 
 	}
 
-
 	// public boolean canMoveTo(LinkedList<Cell> c, Cell next) {
-	// 	Cell head = c.getLast();
+	// Cell head = c.getLast();
 
-	// 	if(head.getPosition().x == 0 && next.getPosition() == head.getPosition().getCellLeft())
-	// 		return false;
-	// 	if(head.getPosition().x == board.NUM_COLUMNS-1 && next.getPosition() == head.getPosition().getCellRight())
-	// 		return false;
-	// 	if(head.getPosition().y == 0 && next.getPosition() == head.getPosition().getCellAbove())
-	// 		return false;
-	// 	if(head.getPosition().y == board.NUM_ROWS-1 && next.getPosition() == head.getPosition().getCellBelow())
-	// 		return false;
-	// 	return true;
+	// if(head.getPosition().x == 0 && next.getPosition() ==
+	// head.getPosition().getCellLeft())
+	// return false;
+	// if(head.getPosition().x == board.NUM_COLUMNS-1 && next.getPosition() ==
+	// head.getPosition().getCellRight())
+	// return false;
+	// if(head.getPosition().y == 0 && next.getPosition() ==
+	// head.getPosition().getCellAbove())
+	// return false;
+	// if(head.getPosition().y == board.NUM_ROWS-1 && next.getPosition() ==
+	// head.getPosition().getCellBelow())
+	// return false;
+	// return true;
 	// }
 
 	protected void doInitialPositioning() throws InterruptedException {

@@ -44,8 +44,7 @@ public class Client {
 	public void runClient() throws IOException {
 		try {
 			connectToServer();
-
-			// cgui.init();
+			cgui.init();
 			handleConnection();
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -76,7 +75,7 @@ public class Client {
 
 		GameState estado = (GameState) in.readObject(); // le GameState recebido e atualiza a gui consoante os dados de
 														// cada Pacote incluidos na GameState recebida
-		List<Pacote> recebido = estado.getPacotes();
+		List<Pacotev1> recebido = estado.getPacotes();
 		cgui.atualiza(recebido);
 		System.out.println("atualizei");
 

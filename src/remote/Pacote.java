@@ -1,11 +1,12 @@
 package remote;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import environment.BoardPosition;
 import environment.Cell;
-import game.GameElement;
+import environment.CellContent;
 import game.Goal;
 import game.Obstacle;
 

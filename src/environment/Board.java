@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
-
 import game.GameElement;
 import game.Goal;
 import game.Obstacle;
@@ -15,6 +14,7 @@ import game.ObstacleMover;
 import game.Snake;
 import remote.GameState;
 import remote.Pacote;
+import remote.Pacotev1;
 import remote.Pacote.ObjectType;
 
 public abstract class Board extends Observable implements Serializable {
@@ -29,6 +29,7 @@ public abstract class Board extends Observable implements Serializable {
 	protected LinkedList<Obstacle> obstacles = new LinkedList<Obstacle>();
 	public ObstacleMover obstacleMover;
 	public int goalValue = 1;
+	HashMap<BoardPosition, CellContent> boardMap = new HashMap<>();
 
 	public Board() {
 		cells = new Cell[NUM_COLUMNS][NUM_ROWS];
@@ -40,17 +41,6 @@ public abstract class Board extends Observable implements Serializable {
 
 	}
 
-	public HashMap<BoardPosition, Cell> getHashMap() {
-
-        HashMap<BoardPosition, Cell> map = new HashMap<>();
-        for (int x = 0; x < NUM_COLUMNS; x++) {
-            for (int y = 0; y < NUM_ROWS; y++) {
-                map.put(new BoardPosition(x, y), getCell(new BoardPosition(x, y)));
-            }
-        }
-        return map;
-    }
-
 	public List<BoardPosition> getBlockedCells() {
 		List<BoardPosition> blocked = new ArrayList<>();
 		for (int x = 0; x < NUM_COLUMNS; x++) {
@@ -61,6 +51,28 @@ public abstract class Board extends Observable implements Serializable {
 			}
 		}
 		return blocked;
+	}
+
+	public HashMap<BoardPosition, CellContent> getHashMap() {
+		makeHashMap();
+		return boardMap;
+	}
+
+	public void makeHashMap() {
+
+		for (int i = 0; i < cells.length; i++) {
+			for (int j = 0; j < cells.length; j++) {
+				BoardPosition position = new BoardPosition(i, j);
+				Cell cell = cells[i][j];
+				// Extracting information from the cell
+				GameElement gameElement = cell.getGameElement(); // Assuming a method to get the GameElement
+				Snake snake = cell.getOcuppyingSnake(); // Assuming a method to get the Snake
+
+				// Create a CellContent object and put it in the map
+				CellContent cellContent = new CellContent(gameElement, snake);
+				boardMap.put(position, cellContent);
+			}
+		}
 	}
 
 	public void endGame() {
@@ -203,29 +215,10 @@ public abstract class Board extends Observable implements Serializable {
 	}
 
 	public GameState EstadoJogo() {
-		List<Pacote> infoPlayers = new ArrayList<Pacote>();
-
-		// meter os dados de cada snake num pacote
-		for (Snake snake : snakes) {
-			Pacote packet = new Pacote(snake.getIdentification(), snake.getCells(), snake.getSize(),
-					snake.isHumanSnake(), snake.getPath(), Pacote.ObjectType.SNAKE);
-			infoPlayers.add(packet);
-		}
-
-		// meter goal num pacote
-		Goal goal = getActiveGoal();
-		BoardPosition goalPos = getGoalPosition();
-		int GoalValue = getGoalValue();
-
-		Pacote goalPacket = new Pacote(goal, goalPos, GoalValue, Pacote.ObjectType.GOAL);
-		infoPlayers.add(goalPacket);
-
-		// meter obstacles no pacote
-		LinkedList<Obstacle> o = obstacles;
-		Pacote obstaclePacket = new Pacote(o, Pacote.ObjectType.OBSTACLE);
-
-		infoPlayers.add(obstaclePacket);
-
+		List<Pacotev1> infoPlayers = new ArrayList<Pacotev1>();
+		HashMap<BoardPosition, CellContent> map = getHashMap();
+		Pacotev1 pacote = new Pacotev1(map);
+		infoPlayers.add(pacote);
 		GameState estado = new GameState(infoPlayers);
 		// se um jogador morrer, remover da lista
 		return estado;

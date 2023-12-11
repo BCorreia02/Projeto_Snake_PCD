@@ -37,8 +37,8 @@ public class Server {
 	public Server() throws IOException {
 		this.ss = new ServerSocket(port);
 		this.bcc = new BoardComponentClient(null);
-		this.board = new RemoteBoard(bcc,false);
-		this.gui= new SnakeGui(board,600,0);
+		this.board = new RemoteBoard(bcc, false);
+		this.gui = new SnakeGui(board, 600, 0);
 		gui.start(); // a SnakeGui e uma thread portanto executa o que esta dentro do run(init)
 
 	}
@@ -72,8 +72,8 @@ public class Server {
 
 				System.out.println("iniciei o servidor");
 
-				GameUpdater gu = new GameUpdater(s);
 				ClientHandler ch = new ClientHandler(s);
+				GameUpdater gu = new GameUpdater(s);
 
 				gu.start();
 				ch.start();
@@ -128,7 +128,7 @@ public class Server {
 		}
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
-			while (true) {
+			while (!clientSocket.isClosed()) {
 				String c = (String) in.readObject(); // bufferedReader como input, transformar o texto em direcao depois
 														// de ler, usar ENUM
 				BoardPosition head = hs.getCells().getLast().getPosition();

@@ -61,7 +61,6 @@ public class Obstacle extends GameElement {
 			this.current = future;
 			remainingMoves--;
 
-			
 		}
 	}
 }

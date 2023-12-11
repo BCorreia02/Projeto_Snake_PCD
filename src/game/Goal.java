@@ -5,10 +5,11 @@ import java.io.Serializable;
 import environment.Board;
 import environment.BoardPosition;
 
-public class Goal extends GameElement implements Serializable{
+public class Goal extends GameElement implements Serializable {
 	private int value = 1;
 	private Board board;
-	
+	private BoardPosition pos;
+
 	public static final int MAX_VALUE = 10;
 
 	public Goal(Board board) {
@@ -33,6 +34,5 @@ public class Goal extends GameElement implements Serializable{
 		board.addGameElement(new Goal(board)); // Adiciona um novo prêmio
 		return this.value;
 	}
-
 
 }
