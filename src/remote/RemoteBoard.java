@@ -40,29 +40,11 @@ public class RemoteBoard extends Board implements Serializable {
 	public RemoteBoard(BoardComponentClient boardComponentClient, boolean cliente) {
 		this.boardComponentClient = boardComponentClient;
 		buildGui();
-
-		// if (!cliente) {
-		// 	for (int i = 0; i < NUM_SNAKES; i++) {
-		// 		AutomaticSnake snake = new AutomaticSnake(i, this);
-		// 		snakes.add(snake);
-		// 	}
-
-		// 	addObstacles(NUM_OBSTACLES);
-
-		// 	obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
-
-		// 	for (Obstacle obstacle : obstacles) { // Assuming 'obstacles' is a List of Obstacle
-		// 		obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
-		// 	}
-		// }
-
-		// addGoal();
 	}
 
 	private void buildGui() {
 
 		frame.add(boardComponentClient);
-
 		frame.setSize(800, 800);
 		frame.setLocation(0, 150);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,20 +52,9 @@ public class RemoteBoard extends Board implements Serializable {
 	}
 
 	@Override
-	public void init() { // startar RemoteBoard
-		// for (Snake s : snakes)
-		// 	s.start();
-
-		// obstacleMover.start();
+	public void init() {
 		setChanged();
 	}
-
-	// public Obstacle getObstacle(Obstacle obstacle) {
-	// 	for (Obstacle a : obstacles)
-	// 		if (obstacle.equals(a))
-	// 			return a;
-	// 	return null;
-	// }
 
 	@Override
 	public void handleKeyPress(int keyCode) {

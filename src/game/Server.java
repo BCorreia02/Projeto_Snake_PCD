@@ -43,19 +43,8 @@ public class Server {
 
 	}
 
-	public static Server getInstance() throws IOException {
-		if (instance == null) {
-			instance = new Server();
-		}
-		return instance;
-	}
-
 	public Board getBoard() {
 		return board;
-	}
-
-	public void setInstance(Server s) {
-		instance = s;
 	}
 
 	public SnakeGui getGame() {
@@ -65,20 +54,12 @@ public class Server {
 	public void startServer() throws IOException, ClassNotFoundException, InterruptedException {
 
 		try {
-
 			while (!ss.isClosed()) {
 				Socket s = ss.accept();
-
-				System.out.println("Ligacao feita");
-
 				ClientHandler ch = new ClientHandler(s);
 				GameUpdater gu = new GameUpdater(s);
-				System.out.println("gameupdater criado");
 				gu.start();
-				System.out.println("gameupdater iniciado");
 				ch.start();
-				System.out.println("clienthandler iniciado");
-
 			}
 		} finally {
 			closeServerSocket();
@@ -98,7 +79,6 @@ public class Server {
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 		Server server = new Server();
 		System.out.println("criei o servidor");
-		server.setInstance(server);
 		System.out.println(instance);
 		server.startServer();
 
@@ -113,7 +93,7 @@ public class Server {
 		private HumanSnake hs;
 
 		ClientHandler(Socket socket) throws ClassNotFoundException, IOException, InterruptedException {
-			
+
 			this.clientSocket = socket;
 			in = new ObjectInputStream(this.clientSocket.getInputStream());
 			HumanSnake hs = new HumanSnake(id, board); /// while (true) englobava as a criacao de um HumanPlayer -errado
@@ -125,9 +105,9 @@ public class Server {
 			System.out.println("cliente ligado");
 		}
 
-
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
 			while (!clientSocket.isClosed()) {
+
 				String c = (String) in.readObject(); // bufferedReader como input, transformar o texto em direcao depois
 														// de ler, usar ENUM
 				BoardPosition head = hs.getCells().getLast().getPosition();
@@ -147,8 +127,7 @@ public class Server {
 						break;
 				}
 
-				Cell newCell = new Cell(newPos);
-				hs.setFuture(newCell);
+				hs.setFuture(new Cell(newPos));
 
 			}
 		}
@@ -165,9 +144,7 @@ public class Server {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
 			}
-
 		}
 	}
 
@@ -206,7 +183,6 @@ public class Server {
 		public void handleOuts() throws ClassNotFoundException, IOException, InterruptedException {
 
 			while (!Thread.interrupted()) {
-				
 				updateMaps(board.getHashMap());
 				out.flush();
 				Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
@@ -217,7 +193,6 @@ public class Server {
 		public void run() {
 			try {
 				handleOuts();
-
 			} catch (ClassNotFoundException | IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

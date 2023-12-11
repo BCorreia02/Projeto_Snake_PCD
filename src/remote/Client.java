@@ -34,7 +34,6 @@ public class Client {
 	private RemoteBoard cgui;
 	private InetAddress ip;
 	private int porto;
-	private boolean method;
 	private SnakeGui gui;
 	private BoardComponentClient bcc;
 
@@ -44,17 +43,16 @@ public class Client {
 		this.bcc = bcc;
 		this.cgui = new RemoteBoard(bcc, true);
 		this.gui = new SnakeGui(cgui, 0, 0);
-		
+
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Client(InetAddress.getByName(null),Server.port,new BoardComponentClient(null)).runClient();
+		new Client(InetAddress.getByName(null), Server.port, new BoardComponentClient(null, true)).runClient();
 	}
 
 	public void runClient() throws IOException {
 		try {
 			connectToServer();
-			gui.init();
 			handleConnection();
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -69,7 +67,7 @@ public class Client {
 		cliente = new Socket(ip, porto);
 		System.out.println("Socket " + cliente);
 
-		out = new ObjectOutputStream(cliente.getOutputStream()); //trocar para mandar strings
+		out = new ObjectOutputStream(cliente.getOutputStream()); // trocar para mandar strings
 		out.flush();
 		System.out.println("Cliente passou output");
 
@@ -78,31 +76,24 @@ public class Client {
 	}
 
 	public void handleConnection() throws IOException, ClassNotFoundException {
-
-		
-		
-
 		while (true) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
-			
-			
 			handleRcvPacote();
 			handleSend();
 			System.out.println("GameState");
-			
 		}
 	}
 
-	
-
 	public void handleRcvPacote() throws ClassNotFoundException, IOException {
-		 // le GameState recebido e atualiza a gui consoante os dados de
-														// cada Pacote incluidos na GameState recebida
-		System.out.println("Recebi gamestate");
+		// le GameState recebido e atualiza a gui consoante os dados de
+		// cada Pacote incluidos na GameState recebida
+		System.out.println("Novo map");
 		Object recieved = in.readObject();
-		if (recieved!=null && recieved instanceof ConcurrentHashMap){
-			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) in.readObject();
+		if (recieved != null && recieved instanceof ConcurrentHashMap) {
+			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) in
+					.readObject();
+
 			bcc.setNewMap(mapa);
-			bcc.repaint();
+
 			this.cgui = new RemoteBoard(bcc, true);
 		}
 	}
@@ -116,7 +107,5 @@ public class Client {
 		System.out.println("enviei");
 
 	}
-
-	
 
 }
