@@ -110,7 +110,6 @@ public abstract class Board extends Observable implements Serializable {
 				getCell(pos).setGameElement(gameElement);
 				if (gameElement instanceof Goal) {
 					setGoalPosition(pos);
-					System.out.println("Goal placed at:" + pos);
 				} else
 					((Obstacle) gameElement).setCurrent(pos);
 

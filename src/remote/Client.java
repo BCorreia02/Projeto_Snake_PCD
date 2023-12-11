@@ -10,6 +10,8 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.SwingUtilities;
+
 import environment.BoardPosition;
 import environment.Cell;
 import environment.CellContent;
@@ -41,9 +43,12 @@ public class Client {
 		this.ip = ip;
 		this.porto = porto;
 		this.bcc = bcc;
-		this.cgui = new RemoteBoard(bcc, true);
-		this.gui = new SnakeGui(cgui, 0, 0);
-
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				cgui = new RemoteBoard(bcc, true);
+				gui = new SnakeGui(cgui, 0, 0);
+			}
+		});
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -51,6 +56,7 @@ public class Client {
 	}
 
 	public void runClient() throws IOException {
+		gui.init();
 		try {
 			connectToServer();
 			handleConnection();
@@ -65,47 +71,37 @@ public class Client {
 
 	public void connectToServer() throws IOException {
 		cliente = new Socket(ip, porto);
-		System.out.println("Socket " + cliente);
-
 		out = new ObjectOutputStream(cliente.getOutputStream()); // trocar para mandar strings
 		out.flush();
-		System.out.println("Cliente passou output");
-
 		in = new ObjectInputStream(cliente.getInputStream());
-		System.out.println("client passou input ");
 	}
 
 	public void handleConnection() throws IOException, ClassNotFoundException {
 		while (true) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
-			handleRcvPacote();
-			handleSend();
-			System.out.println("GameState");
+			handleIn();
+			handleOut();
 		}
 	}
 
-	public void handleRcvPacote() throws ClassNotFoundException, IOException {
-		// le GameState recebido e atualiza a gui consoante os dados de
-		// cada Pacote incluidos na GameState recebida
-		System.out.println("Novo map");
-		Object recieved = in.readObject();
-		if (recieved != null && recieved instanceof ConcurrentHashMap) {
-			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) in
-					.readObject();
+	public void handleIn() throws ClassNotFoundException, IOException {
 
-			bcc.setNewMap(mapa);
-
-			this.cgui = new RemoteBoard(bcc, true);
+		Object received = in.readObject();
+		if (received != null && received instanceof ConcurrentHashMap) {
+			System.out.println("mapa in");
+			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) received;
+			this.cgui.atualiza(mapa); // Call atualiza on RemoteBoard instance
 		}
 	}
 
-	public void handleSend() throws IOException { // envio numa thread separada
+	public void handleOut() throws IOException { // envio numa thread separada
 		String c = cgui.getBoardClient().getLastPressedDirection();
-		System.out.println(c);
-		out.writeObject(c);
-		out.flush();
-		cgui.getBoardClient().getLastPressedDirection();
-		System.out.println("enviei");
-
+		if (c != null) {
+			System.out.println(c);
+			out.writeObject(c);
+			out.flush();
+			cgui.getBoardClient().getLastPressedDirection();
+			System.out.println("enviei");
+		}
 	}
 
 }

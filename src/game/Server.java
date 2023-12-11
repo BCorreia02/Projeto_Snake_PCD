@@ -28,12 +28,11 @@ public class Server {
 	private ServerSocket ss;
 	private ObjectInputStream in; // deixou de estar = null
 	private ObjectOutputStream out; // deixou de estar = null
-	private Board board;
+	private LocalBoard board;
 	private SnakeGui gui;
 
 	private int id = 100;
 	private List<ObjectOutputStream> outs = Collections.synchronizedList(new ArrayList<ObjectOutputStream>());
-	private static Server instance;
 
 	public Server() throws IOException {
 		this.ss = new ServerSocket(port);
@@ -78,8 +77,6 @@ public class Server {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 		Server server = new Server();
-		System.out.println("criei o servidor");
-		System.out.println(instance);
 		server.startServer();
 
 	}
@@ -101,34 +98,35 @@ public class Server {
 														/// um humanplayer
 			id++;
 			board.addSnake(hs);
+			System.out.println("Inicio client handler " + hs.toString());
 			this.hs = hs;
-			System.out.println("cliente ligado");
 		}
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
 			while (!clientSocket.isClosed()) {
+				if (in.readObject() != null) {
+					String c = (String) in.readObject();
+					System.out.println("Recebi string " + c);
+					BoardPosition head = hs.getCells().getLast().getPosition();
+					BoardPosition newPos = null;
 
-				String c = (String) in.readObject(); // bufferedReader como input, transformar o texto em direcao depois
-														// de ler, usar ENUM
-				BoardPosition head = hs.getCells().getLast().getPosition();
-				BoardPosition newPos = null;
-				switch (c) {
-					case "LEFT":
-						newPos = head.getCellLeft();
-						break;
-					case "RIGHT":
-						newPos = head.getCellRight();
-						break;
-					case "UP":
-						newPos = head.getCellAbove();
-						break;
-					case "DOWN":
-						newPos = head.getCellBelow();
-						break;
+					switch (c) {
+						case "LEFT":
+							newPos = head.getCellLeft();
+							break;
+						case "RIGHT":
+							newPos = head.getCellRight();
+							break;
+						case "UP":
+							newPos = head.getCellAbove();
+							break;
+						case "DOWN":
+							newPos = head.getCellBelow();
+							break;
+					}
+
+					hs.setFuture(new Cell(newPos));
 				}
-
-				hs.setFuture(new Cell(newPos));
-
 			}
 		}
 
@@ -156,10 +154,8 @@ public class Server {
 		private HumanSnake jogador;
 
 		GameUpdater(Socket socket) throws IOException, InterruptedException, ClassNotFoundException {
-			this.clientSocket = socket; // a socket de cada cliente � final e � recebida como argumento do ClientHandler
-			this.initializeOut(this.clientSocket); // inicializacao dos canais de input e output do cliente com a socket
-													// do cliente como parametro
-
+			this.clientSocket = socket;
+			this.initializeOut(this.clientSocket);
 		}
 
 		public HumanSnake getHumanPlayer() {
@@ -174,25 +170,29 @@ public class Server {
 		private void updateMaps(ConcurrentHashMap<BoardPosition, CellContent> map) {
 			for (ObjectOutputStream out : outs)
 				try {
+					System.out.println("mapa -> cliente ");
 					out.writeObject(map);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 		}
 
-		public void handleOuts() throws ClassNotFoundException, IOException, InterruptedException {
+		public void handleOut() throws ClassNotFoundException, IOException, InterruptedException {
+			updateMaps(board.getHashMap());
+			out.flush();
+			Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
+		}
 
+		public void handleConnection() throws IOException, ClassNotFoundException, InterruptedException {
 			while (!Thread.interrupted()) {
-				updateMaps(board.getHashMap());
-				out.flush();
-				Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
+				handleOut();
 			}
 		}
 
 		@Override
 		public void run() {
 			try {
-				handleOuts();
+				handleConnection();
 			} catch (ClassNotFoundException | IOException | InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

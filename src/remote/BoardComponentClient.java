@@ -62,105 +62,112 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 
 	@Override
 	protected void paintComponent(Graphics g) {
-		System.out.println(boardMap);
+
 		super.paintComponent(g);
 		final double CELL_WIDTH = getHeight() / (double) NUM_COLUMNS;
+		System.out.println(mapToString(boardMap));
+		for (Map.Entry<BoardPosition, CellContent> entry : boardMap.entrySet()) {
 
-		if (this.boardMap != null) {
+			BoardPosition key = entry.getKey();
+			CellContent value = entry.getValue();
+			Image image = null;
+			Snake snake = null;
+			GameElement el = null;
+			if (value.getGameElement() != null) {
+				el = value.getGameElement();
+				if (el instanceof Obstacle) {
 
-			for (Map.Entry<BoardPosition, CellContent> entry : boardMap.entrySet()) {
+					Obstacle obstacle = (Obstacle) el;
+					int ObstacleX = obstacle.getCurrent().x;
+					int ObstacleY = obstacle.getCurrent().y;
+					image = obstacleImage;
 
-				BoardPosition key = entry.getKey();
-				CellContent value = entry.getValue();
-				Image image = null;
-				Snake snake = null;
-				GameElement el = null;
-				if (value.getGameElement() != null) {
-					el = value.getGameElement();
-					if (el instanceof Obstacle) {
+					g.setColor(Color.BLACK);
+					g.drawImage(image, (int) Math.round(ObstacleX * CELL_WIDTH),
+							(int) Math.round(ObstacleY * CELL_WIDTH),
+							(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH), null);
+					// write number of remaining moves
+					g.setColor(Color.WHITE);
+					g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
+					g.drawString(obstacle.getRemainingMoves() + "",
+							(int) Math.round((ObstacleX + 0.15) * CELL_WIDTH),
+							(int) Math.round((ObstacleY + 0.9) * CELL_WIDTH));
 
-						Obstacle obstacle = (Obstacle) el;
-						int ObstacleX = obstacle.getCurrent().x;
-						int ObstacleY = obstacle.getCurrent().y;
-						image = obstacleImage;
+				} else if (el instanceof Goal) {
 
-						g.setColor(Color.BLACK);
-						g.drawImage(image, (int) Math.round(ObstacleX * CELL_WIDTH),
-								(int) Math.round(ObstacleY * CELL_WIDTH),
-								(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH), null);
-						// write number of remaining moves
-						g.setColor(Color.WHITE);
-						g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
-						g.drawString(obstacle.getRemainingMoves() + "",
-								(int) Math.round((ObstacleX + 0.15) * CELL_WIDTH),
-								(int) Math.round((ObstacleY + 0.9) * CELL_WIDTH));
+					Goal goal = (Goal) el;
 
-					} else if (el instanceof Goal) {
+					int goalX = key.getX();
+					int goalY = key.getY();
 
-						Goal goal = (Goal) el;
-
-						int goalX = key.getX();
-						int goalY = key.getY();
-
-						g.setColor(Color.RED);
-						g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
-						g.drawString(goal.getValue() + "", (int) Math.round((goalX + 0.15) * CELL_WIDTH),
-								(int) Math.round((goalY + 0.9) * CELL_WIDTH));
-					}
-				}
-
-				if (value.getSnake() != null) {
-					snake = (Snake) entry;
-					// different color for human player...
-					if (snake instanceof HumanSnake)
-						g.setColor(Color.ORANGE);
-					else
-						g.setColor(Color.LIGHT_GRAY);
-					LinkedList<Cell> cobra = snake.getCells();
-					for (int i = 0; i != cobra.size(); i++) {
-
-						Cell bloco = cobra.get(i);
-						int blocoX = bloco.getPosition().x;
-						int blocoY = bloco.getPosition().y;
-
-						g.fillRect((int) Math.round(blocoX * CELL_WIDTH),
-								(int) Math.round(blocoY * CELL_WIDTH),
-								(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH));
-					}
-				}
-
-				g.setColor(Color.BLACK);
-				g.drawLine((int) Math.round(key.getX() * CELL_WIDTH), 0, (int) Math.round(key.getX() * CELL_WIDTH),
-						(int) Math.round(RemoteBoard.NUM_ROWS * CELL_WIDTH));
-
-				for (int y1 = 1; y1 < RemoteBoard.NUM_ROWS; y1++) {
-					g.drawLine(0, (int) Math.round(y1 * CELL_WIDTH),
-							(int) Math.round(RemoteBoard.NUM_COLUMNS * CELL_WIDTH),
-							(int) Math.round(y1 * CELL_WIDTH));
-				}
-
-				if (snake != null) {
-					LinkedList<Cell> pedacos = snake.getCells();
-					if (pedacos.size() > 0) {
-						g.setColor(new Color((int) (snake.getId() * 1000)));
-
-						((Graphics2D) g).setStroke(new BasicStroke(5));
-						BoardPosition prevPos = snake.getPath().getFirst();
-						for (BoardPosition coordinate : snake.getPath()) {
-							if (prevPos != null) {
-								g.drawLine((int) Math.round((prevPos.x + .5) * CELL_WIDTH),
-										(int) Math.round((prevPos.y + .5) * CELL_WIDTH),
-										(int) Math.round((coordinate.x + .5) * CELL_WIDTH),
-										(int) Math.round((coordinate.y + .5) * CELL_WIDTH));
-							}
-							prevPos = coordinate;
-						}
-						((Graphics2D) g).setStroke(new BasicStroke(1));
-					}
+					g.setColor(Color.RED);
+					g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
+					g.drawString(goal.getValue() + "", (int) Math.round((goalX + 0.15) * CELL_WIDTH),
+							(int) Math.round((goalY + 0.9) * CELL_WIDTH));
 				}
 			}
 
+			if (value.getSnake() != null) {
+				snake = (Snake) entry;
+				// different color for human player...
+				if (snake instanceof HumanSnake)
+					g.setColor(Color.ORANGE);
+				else
+					g.setColor(Color.LIGHT_GRAY);
+				LinkedList<Cell> cobra = snake.getCells();
+				for (int i = 0; i != cobra.size(); i++) {
+
+					Cell bloco = cobra.get(i);
+					int blocoX = bloco.getPosition().x;
+					int blocoY = bloco.getPosition().y;
+
+					g.fillRect((int) Math.round(blocoX * CELL_WIDTH),
+							(int) Math.round(blocoY * CELL_WIDTH),
+							(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH));
+				}
+			}
+
+			g.setColor(Color.BLACK);
+			g.drawLine((int) Math.round(key.getX() * CELL_WIDTH), 0, (int) Math.round(key.getX() * CELL_WIDTH),
+					(int) Math.round(RemoteBoard.NUM_ROWS * CELL_WIDTH));
+
+			for (int y1 = 1; y1 < RemoteBoard.NUM_ROWS; y1++) {
+				g.drawLine(0, (int) Math.round(y1 * CELL_WIDTH),
+						(int) Math.round(RemoteBoard.NUM_COLUMNS * CELL_WIDTH),
+						(int) Math.round(y1 * CELL_WIDTH));
+			}
+
+			if (snake != null) {
+				LinkedList<Cell> pedacos = snake.getCells();
+				if (pedacos.size() > 0) {
+					g.setColor(new Color((int) (snake.getId() * 1000)));
+
+					((Graphics2D) g).setStroke(new BasicStroke(5));
+					BoardPosition prevPos = snake.getPath().getFirst();
+					for (BoardPosition coordinate : snake.getPath()) {
+						if (prevPos != null) {
+							g.drawLine((int) Math.round((prevPos.x + .5) * CELL_WIDTH),
+									(int) Math.round((prevPos.y + .5) * CELL_WIDTH),
+									(int) Math.round((coordinate.x + .5) * CELL_WIDTH),
+									(int) Math.round((coordinate.y + .5) * CELL_WIDTH));
+						}
+						prevPos = coordinate;
+					}
+					((Graphics2D) g).setStroke(new BasicStroke(1));
+				}
+			}
 		}
+
+	}
+
+	public String mapToString(ConcurrentHashMap<BoardPosition, CellContent> map) {
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<BoardPosition, CellContent> entry : map.entrySet()) {
+			BoardPosition position = entry.getKey();
+			CellContent content = entry.getValue();
+			sb.append("Position: ").append(position).append(", Content: ").append(content).append("\n");
+		}
+		return sb.toString();
 	}
 
 	// Only for remote clients: 2. part of the project

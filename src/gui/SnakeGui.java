@@ -35,17 +35,25 @@ public class SnakeGui extends Thread implements Observer {
 	public SnakeGui(Board board, int x, int y) {
 		super();
 		if (board == null) {
-            throw new IllegalArgumentException("Board cannot be null");
-        }
-		
+			throw new IllegalArgumentException("Board cannot be null");
+		}
+
 		this.board = board;
 		frame = new JFrame("The Snake Game: " + (board instanceof LocalBoard ? "Local" : "Remote"));
 		frame.setLocation(x, y);
 		buildGui();
 	}
 
-	public Board getBoard(){
+	public BoardComponent getBoardComponent() {
+		return boardGui;
+	}
+
+	public Board getBoard() {
 		return board;
+	}
+
+	public void showGui() {
+		frame.setVisible(true);
 	}
 
 	private void buildGui() {
@@ -74,12 +82,12 @@ public class SnakeGui extends Thread implements Observer {
 
 	public void init() {
 		if (board == null) {
-            throw new IllegalStateException("Board is not initialized");
-        }
+			throw new IllegalStateException("Board is not initialized");
+		}
 		frame.setVisible(true);
 		board.addObserver(this);
 		board.init();
-	}	
+	}
 
 	public void run() {
 		init();

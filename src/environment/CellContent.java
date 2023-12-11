@@ -6,6 +6,7 @@ import game.GameElement;
 import game.Snake;
 
 public class CellContent implements Serializable {
+
     private GameElement gameElement;
     private Snake snake;
 
@@ -21,6 +22,11 @@ public class CellContent implements Serializable {
 
     public boolean hasSnake() {
         return snake != null;
+    }
+
+    @Override
+    public String toString() {
+        return ("GameEL: " + gameElement + "Cobra: " + snake);
     }
 
     public Snake getSnake() {
