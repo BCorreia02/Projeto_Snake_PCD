@@ -3,6 +3,7 @@ package remote;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,18 +27,19 @@ import game.Snake;
  * @author luismota
  *
  */
-public class RemoteBoard extends Board {
+public class RemoteBoard extends Board implements Serializable{
 
 	private JFrame frame = new JFrame("cliente");
 	private BoardComponentClient boardComponentClient;
-	private static final int NUM_SNAKES = 2;
+	private static final int NUM_SNAKES = 0;
 	private static final int NUM_OBSTACLES = 10;
 	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 5;
 
-	public RemoteBoard(BoardComponentClient boardComponentClient) {
+	public RemoteBoard(BoardComponentClient boardComponentClient, boolean cliente) {
 		this.boardComponentClient = boardComponentClient;
 		buildGui();
 
+		if (!cliente){
 		for (int i = 0; i < NUM_SNAKES; i++) {
 			AutomaticSnake snake = new AutomaticSnake(i, this);
 			snakes.add(snake);
@@ -50,6 +52,9 @@ public class RemoteBoard extends Board {
 		for (Obstacle obstacle : obstacles) { // Assuming 'obstacles' is a List of Obstacle
 			obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
 		}
+		}
+		
+	
 		addGoal();
 	}
 
@@ -64,7 +69,7 @@ public class RemoteBoard extends Board {
 	}
 
 	@Override
-	public void init() { // startar RemoteBoard
+	public void init() { //startar RemoteBoard
 		for (Snake s : snakes)
 			s.start();
 
@@ -96,6 +101,7 @@ public class RemoteBoard extends Board {
 	public void atualiza(List<Pacote> recebido) {
 		this.boardComponentClient.setNewList(recebido);
 
+		
 	}
 
 }

@@ -1,9 +1,11 @@
 package game;
 
+import java.io.Serializable;
+
 import environment.Board;
 import environment.BoardPosition;
 
-public class Goal extends GameElement {
+public class Goal extends GameElement implements Serializable{
 	private int value = 1;
 	private Board board;
 	

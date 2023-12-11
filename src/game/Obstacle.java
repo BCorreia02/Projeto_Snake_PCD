@@ -61,10 +61,7 @@ public class Obstacle extends GameElement {
 			this.current = future;
 			remainingMoves--;
 
-			for (Snake snake : board.getSnakes()) {
-				if (snake.getFuture().isBlocked())
-					snake.interrupt();
-			}
+			
 		}
 	}
 }

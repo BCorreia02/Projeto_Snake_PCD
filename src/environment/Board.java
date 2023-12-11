@@ -3,6 +3,7 @@ package environment;
 import java.io.Serializable;
 import java.rmi.server.RemoteStub;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -38,6 +39,17 @@ public abstract class Board extends Observable implements Serializable {
 		}
 
 	}
+
+	public HashMap<BoardPosition, Cell> getHashMap() {
+
+        HashMap<BoardPosition, Cell> map = new HashMap<>();
+        for (int x = 0; x < NUM_COLUMNS; x++) {
+            for (int y = 0; y < NUM_ROWS; y++) {
+                map.put(new BoardPosition(x, y), getCell(new BoardPosition(x, y)));
+            }
+        }
+        return map;
+    }
 
 	public List<BoardPosition> getBlockedCells() {
 		List<BoardPosition> blocked = new ArrayList<>();

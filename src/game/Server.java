@@ -37,8 +37,8 @@ public class Server {
 	public Server() throws IOException {
 		this.ss = new ServerSocket(port);
 		this.bcc = new BoardComponentClient(null);
-		this.board = new RemoteBoard(bcc);
-		this.gui = new SnakeGui(board, 600, 0);
+		this.board = new RemoteBoard(bcc,false);
+		this.gui= new SnakeGui(board,600,0);
 		gui.start(); // a SnakeGui e uma thread portanto executa o que esta dentro do run(init)
 
 	}

@@ -38,7 +38,7 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 		setFocusable(true);
 		addKeyListener(this);
 	}
-
+	
 	public void setNewList(List<Pacote> p) {
 		this.pacotes = p;
 		repaint();
@@ -55,14 +55,17 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 		super.paintComponent(g);
 		final double CELL_WIDTH = getHeight() / (double) NUM_COLUMNS;
 		// System.err.println("W:"+getWidth()+" H:"+getHeight());
+
+				// if (this.pacotes == null) {
+				// 	System.out.println("NAO HA JOGADORES");
+				// 	return;
+				// }
+
 		for (int x = 0; x < NUM_COLUMNS; x++) {
 			for (int y = 0; y < NUM_ROWS; y++) {
 
-				if (this.pacotes == null) {
-					System.out.println("NAO HA JOGADORES");
-					return;
-				}
-
+				// if (Map.get(x,y) != null){}
+				
 				// Cell cell = cgui.getCell(new BoardPosition(x, y));
 
 				if (this.pacotes != null) {

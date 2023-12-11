@@ -35,14 +35,17 @@ public class Client {
 	Client(InetAddress ip, boolean method) throws IOException {
 		this.ip = ip;
 		this.method = method;
-		this.cgui = new RemoteBoard(new BoardComponentClient(method));
-		cgui.init();
-		// Removed the line that gets the server instance and starts the GUI.
+		// this.cgui = new RemoteBoard(new BoardComponentClient(method),true);
+		// this.gui= Server.getInstance().getGame();
+		// this.gui = new SnakeGui(cgui,600 , 0);
+		// gui.start();
 	}
 
 	public void runClient() throws IOException {
 		try {
 			connectToServer();
+
+			// cgui.init();
 			handleConnection();
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
