@@ -52,6 +52,10 @@ public class SnakeGui extends JFrame implements Observer {
 		return board;
 	}
 
+	public void setBoard(Board board) {
+		this.board = board;
+	}
+
 	public void showGui() {
 		frame.setVisible(true);
 	}

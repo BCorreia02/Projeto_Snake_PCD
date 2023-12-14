@@ -28,26 +28,19 @@ import game.Snake;
 import game.GameElement;
 import utils.Direction;
 
-public class BoardComponentClient extends JComponent implements KeyListener, Serializable {
+public class BoardComponentClient extends JComponent implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final int NUM_ROWS = 30;
 	public static final int NUM_COLUMNS = 30;
 
-	private RemoteBoard board;
 	private Image obstacleImage;
 	private String lastDirection;
 	private ConcurrentHashMap<BoardPosition, CellContent> boardMap;
 
-	public BoardComponentClient(RemoteBoard board, Boolean method) {
-
-		this.board = board;
+	public BoardComponentClient(Boolean method) {
 		obstacleImage = new ImageIcon(getClass().getResource("/obstacle.png")).getImage();
-
-		// Necessary for key listener
-		setFocusable(true);
-		addKeyListener(this);
 	}
 
 	public void setNewMap(ConcurrentHashMap<BoardPosition, CellContent> mapa) {
@@ -173,48 +166,6 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 	// Only for remote clients: 2. part of the project
 	// Methods keyPressed and keyReleased will react to user pressing and
 	// releasing keys on the keyboard.
-	@Override
-	public void keyPressed(KeyEvent e) {
-
-		// if(!this.method){
-		// }
-
-		System.out.println("Got key pressed.");
-		if (e.getKeyCode() != KeyEvent.VK_LEFT && e.getKeyCode() != KeyEvent.VK_RIGHT &&
-				e.getKeyCode() != KeyEvent.VK_UP && e.getKeyCode() != KeyEvent.VK_DOWN)
-			return; // ignore
-		switch (e.getKeyCode()) {
-			case KeyEvent.VK_LEFT:
-				lastDirection = "LEFT";
-				break;
-			case KeyEvent.VK_RIGHT:
-				lastDirection = "RIGHT";
-				break;
-			case KeyEvent.VK_UP:
-				lastDirection = "UP";
-				break;
-			case KeyEvent.VK_DOWN:
-				lastDirection = "DOWN";
-				break;
-		}
-		board.handleKeyPress(e.getKeyCode());
-
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() != KeyEvent.VK_LEFT && e.getKeyCode() != KeyEvent.VK_RIGHT &&
-				e.getKeyCode() != KeyEvent.VK_UP && e.getKeyCode() != KeyEvent.VK_DOWN)
-			return; // ignore
-
-		System.out.println("Got key released.");
-		board.handleKeyRelease();
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-		// ignore
-	}
 
 	public String getLastPressedDirection() {
 		return lastDirection;

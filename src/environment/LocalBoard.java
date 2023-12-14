@@ -2,10 +2,8 @@ package environment;
 
 import game.Obstacle;
 import game.ObstacleMover;
-import game.Server;
 import game.Snake;
 import game.AutomaticSnake;
-import game.HumanSnake;
 
 /**
  * Class representing the state of a game running locally

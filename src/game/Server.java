@@ -15,11 +15,8 @@ import environment.BoardPosition;
 import environment.Cell;
 import environment.CellContent;
 import environment.LocalBoard;
-import gui.BoardComponent;
 import gui.SnakeGui;
-import javafx.scene.input.KeyEvent;
-import remote.BoardComponentClient;
-import remote.RemoteBoard;
+import java.awt.event.KeyEvent;
 
 public class Server {
 	private ServerSocket server;
@@ -39,7 +36,6 @@ public class Server {
 		this.board = new LocalBoard();
 		this.gui = new SnakeGui(board, 600, 0);
 		gui.init();
-		; // a SnakeGui e uma thread portanto executa o que esta dentro do run(init)
 
 	}
 
@@ -108,7 +104,7 @@ public class Server {
 				Object received = in.readObject();
 				if (received != null) {
 					String c = (String) received;
-					System.out.println("Recebi string " + c);
+					System.out.println("Key received " + c);
 					BoardPosition head = hs.getCells().getLast().getPosition();
 					BoardPosition newPos = null;
 
@@ -170,13 +166,15 @@ public class Server {
 		}
 
 		private void updateMaps(ConcurrentHashMap<BoardPosition, CellContent> map) {
-			for (ObjectOutputStream out : outs)
-				try {
-					System.out.println("mapa -> cliente ");
-					out.writeObject(map);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			synchronized (outs) {
+				for (ObjectOutputStream out : outs)
+					try {
+						// System.out.println("mapa -> cliente ");
+						out.writeObject(map);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
 		}
 
 		public void handleOut() throws ClassNotFoundException, IOException, InterruptedException {

@@ -1,25 +1,10 @@
 package remote;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.swing.JFrame;
-
-import environment.LocalBoard;
 import environment.Board;
 import environment.BoardPosition;
-import environment.Cell;
 import environment.CellContent;
-import game.AutomaticSnake;
-import game.Goal;
-import game.Obstacle;
-import game.ObstacleMover;
-import game.Snake;
+import java.awt.event.KeyEvent;
 
 /**
  * Remote representation of the game, no local threads involved.
@@ -29,26 +14,12 @@ import game.Snake;
  * @author luismota
  *
  */
-public class RemoteBoard extends Board implements Serializable {
+public class RemoteBoard extends Board {
 
-	private JFrame frame = new JFrame("cliente");
 	private BoardComponentClient boardComponentClient;
-	private static final int NUM_SNAKES = 0;
-	private static final int NUM_OBSTACLES = 10;
-	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 5;
 
 	public RemoteBoard(BoardComponentClient boardComponentClient, boolean cliente) {
 		this.boardComponentClient = boardComponentClient;
-		buildGui();
-	}
-
-	private void buildGui() {
-
-		frame.add(boardComponentClient);
-		frame.setSize(800, 800);
-		frame.setLocation(0, 150);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 	}
 
 	@Override
@@ -58,12 +29,39 @@ public class RemoteBoard extends Board implements Serializable {
 
 	@Override
 	public void handleKeyPress(int keyCode) {
-		// TODO - movimento do HumanSnake
+		if (boardComponentClient == null) {
+			throw new IllegalStateException("BoardComponentClient is not initialized");
+		}
+		String direction = null;
+		switch (keyCode) {
+			case KeyEvent.VK_LEFT:
+				direction = "LEFT";
+				break;
+			case KeyEvent.VK_RIGHT:
+				direction = "RIGHT";
+				break;
+			case KeyEvent.VK_UP:
+				direction = "UP";
+				break;
+			case KeyEvent.VK_DOWN:
+				direction = "DOWN";
+				break;
+		}
+		if (direction != null) {
+			boardComponentClient.setLastPressedDirection(direction);
+			// Optionally, you can send the direction to the server here
+			// Or you might have another method to periodically send the direction to the
+			// server
+		}
 	}
 
 	@Override
 	public void handleKeyRelease() {
-		// TODO - idk
+		if (boardComponentClient == null) {
+			throw new IllegalStateException("BoardComponentClient is not initialized");
+		}
+		boardComponentClient.setLastPressedDirection(null);
+		// If you need to notify the server about the key release, you can do it here
 	}
 
 	public BoardComponentClient getBoardClient() {

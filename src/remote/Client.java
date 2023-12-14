@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,33 +28,52 @@ import utils.Direction;
 
 public class Client {
 
-	// public static final int PORTO = 9081;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private Socket cliente;
-	private RemoteBoard cgui;
+	private RemoteBoard board;
 	private InetAddress ip;
 	private int porto;
 	private SnakeGui gui;
 	private BoardComponentClient bcc;
 
-	Client(InetAddress ip, int porto, BoardComponentClient bcc) throws IOException {
+	Client(InetAddress ip, int porto) throws IOException {
 		this.ip = ip;
 		this.porto = porto;
-		this.bcc = bcc;
-		this.cgui = new RemoteBoard(bcc, true);
-		this.gui = new SnakeGui(cgui, 0, 0);
+		this.bcc = new BoardComponentClient(null);
+		this.board = new RemoteBoard(bcc, true);
+		this.gui = new SnakeGui(board, 600, 0);
+		gui.init();
+	}
 
+	public void setBoardComponentClient(BoardComponentClient bcc) {
+		this.bcc = bcc;
+		this.board = new RemoteBoard(bcc, true);
+		// Update GUI
+		this.gui.setBoard(board);
+	}
+
+	public RemoteBoard getBoard() {
+		return board;
+	}
+
+	public BoardComponentClient getBoardComponentClient() {
+		return bcc;
 	}
 
 	public static void main(String[] args) throws IOException {
-		new Client(InetAddress.getByName(null), Server.port, new BoardComponentClient(null, true)).runClient();
+		Client client = new Client(InetAddress.getByName(null), Server.port);
+		client.runClient();
+		client.setBoardComponentClient(client.getBoardComponentClient());
+	}
+
+	private SnakeGui getGui() {
+		return gui;
 	}
 
 	public void runClient() throws IOException {
 		try {
 			connectToServer();
-			gui.setVisible(true); // Make the GUI visible
 			handleConnection();
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -69,11 +89,11 @@ public class Client {
 		out = new ObjectOutputStream(cliente.getOutputStream()); // trocar para mandar strings
 		out.flush();
 		in = new ObjectInputStream(cliente.getInputStream());
-		System.out.println("IN OUT CREATED");
+		System.out.println("CONNECTION CREATED");
 	}
 
 	public void handleConnection() throws IOException, ClassNotFoundException {
-		while (true) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
+		while (!cliente.isClosed()) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
 			handleRcvPacote();
 			handleSend();
 		}
@@ -82,19 +102,19 @@ public class Client {
 	public void handleRcvPacote() throws ClassNotFoundException, IOException {
 		Object received = in.readObject();
 		if (received != null && received instanceof ConcurrentHashMap) {
-			System.out.println("Novo map");
+			// System.out.println("Novo map");
 			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) received;
 			bcc.setNewMap(mapa);
-			this.cgui = new RemoteBoard(bcc, true);
+			this.board = new RemoteBoard(bcc, true);
 		}
 	}
 
 	public void handleSend() throws IOException { // envio numa thread separada
-		String c = cgui.getBoardClient().getLastPressedDirection();
+		String c = board.getBoardClient().getLastPressedDirection();
 		if (c != null) {
 			out.writeObject(c);
 			out.flush();
-			cgui.getBoardClient().getLastPressedDirection();
+			board.getBoardClient().setLastPressedDirection(null);
 			System.out.println("Tecla enviada");
 		}
 
