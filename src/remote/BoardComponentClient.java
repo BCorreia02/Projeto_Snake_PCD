@@ -219,4 +219,8 @@ public class BoardComponentClient extends JComponent implements KeyListener, Ser
 	public String getLastPressedDirection() {
 		return lastDirection;
 	}
+
+	public void setLastPressedDirection(String a) {
+		lastDirection = a;
+	}
 }

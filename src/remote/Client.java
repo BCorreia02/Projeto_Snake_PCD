@@ -10,8 +10,6 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.SwingUtilities;
-
 import environment.BoardPosition;
 import environment.Cell;
 import environment.CellContent;
@@ -43,12 +41,9 @@ public class Client {
 		this.ip = ip;
 		this.porto = porto;
 		this.bcc = bcc;
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				cgui = new RemoteBoard(bcc, true);
-				gui = new SnakeGui(cgui, 0, 0);
-			}
-		});
+		this.cgui = new RemoteBoard(bcc, true);
+		this.gui = new SnakeGui(cgui, 0, 0);
+
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -56,9 +51,9 @@ public class Client {
 	}
 
 	public void runClient() throws IOException {
-		gui.init();
 		try {
 			connectToServer();
+			gui.setVisible(true); // Make the GUI visible
 			handleConnection();
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -74,34 +69,35 @@ public class Client {
 		out = new ObjectOutputStream(cliente.getOutputStream()); // trocar para mandar strings
 		out.flush();
 		in = new ObjectInputStream(cliente.getInputStream());
+		System.out.println("IN OUT CREATED");
 	}
 
 	public void handleConnection() throws IOException, ClassNotFoundException {
 		while (true) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
-			handleIn();
-			handleOut();
+			handleRcvPacote();
+			handleSend();
 		}
 	}
 
-	public void handleIn() throws ClassNotFoundException, IOException {
-
+	public void handleRcvPacote() throws ClassNotFoundException, IOException {
 		Object received = in.readObject();
 		if (received != null && received instanceof ConcurrentHashMap) {
-			System.out.println("mapa in");
+			System.out.println("Novo map");
 			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) received;
-			this.cgui.atualiza(mapa); // Call atualiza on RemoteBoard instance
+			bcc.setNewMap(mapa);
+			this.cgui = new RemoteBoard(bcc, true);
 		}
 	}
 
-	public void handleOut() throws IOException { // envio numa thread separada
+	public void handleSend() throws IOException { // envio numa thread separada
 		String c = cgui.getBoardClient().getLastPressedDirection();
 		if (c != null) {
-			System.out.println(c);
 			out.writeObject(c);
 			out.flush();
 			cgui.getBoardClient().getLastPressedDirection();
-			System.out.println("enviei");
+			System.out.println("Tecla enviada");
 		}
+
 	}
 
 }

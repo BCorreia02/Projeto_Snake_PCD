@@ -38,7 +38,8 @@ public class Server {
 		this.ss = new ServerSocket(port);
 		this.board = new LocalBoard();
 		this.gui = new SnakeGui(board, 600, 0);
-		gui.start(); // a SnakeGui e uma thread portanto executa o que esta dentro do run(init)
+		gui.init();
+		; // a SnakeGui e uma thread portanto executa o que esta dentro do run(init)
 
 	}
 
@@ -104,8 +105,9 @@ public class Server {
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
 			while (!clientSocket.isClosed()) {
-				if (in.readObject() != null) {
-					String c = (String) in.readObject();
+				Object received = in.readObject();
+				if (received != null) {
+					String c = (String) received;
 					System.out.println("Recebi string " + c);
 					BoardPosition head = hs.getCells().getLast().getPosition();
 					BoardPosition newPos = null;
