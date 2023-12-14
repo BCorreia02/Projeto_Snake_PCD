@@ -64,7 +64,7 @@ public class RemoteBoard extends Board {
 		// If you need to notify the server about the key release, you can do it here
 	}
 
-	public BoardComponentClient getBoardClient() {
+	public BoardComponentClient getBoardComponentClient() {
 		return boardComponentClient;
 	}
 

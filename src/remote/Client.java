@@ -6,18 +6,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import environment.BoardPosition;
-import environment.Cell;
 import environment.CellContent;
 import game.Server;
-import gui.BoardComponent;
 import gui.SnakeGui;
-import utils.Direction;
 
 /**
  * Remore client, only for part II
@@ -110,11 +105,11 @@ public class Client {
 	}
 
 	public void handleSend() throws IOException { // envio numa thread separada
-		String c = board.getBoardClient().getLastPressedDirection();
+		String c = board.getBoardComponentClient().getLastPressedDirection();
 		if (c != null) {
 			out.writeObject(c);
 			out.flush();
-			board.getBoardClient().setLastPressedDirection(null);
+			board.getBoardComponentClient().setLastPressedDirection(null);
 			System.out.println("Tecla enviada");
 		}
 
