@@ -105,25 +105,28 @@ public class Server {
 				if (received != null) {
 					String c = (String) received;
 					System.out.println("Key received " + c);
-					BoardPosition head = hs.getCells().getLast().getPosition();
-					BoardPosition newPos = null;
 
-					switch (c) {
-						case "LEFT":
-							newPos = head.getCellLeft();
-							break;
-						case "RIGHT":
-							newPos = head.getCellRight();
-							break;
-						case "UP":
-							newPos = head.getCellAbove();
-							break;
-						case "DOWN":
-							newPos = head.getCellBelow();
-							break;
-					}
-
-					hs.setFuture(new Cell(newPos));
+					/*
+					 * BoardPosition head = hs.getCells().getLast().getPosition();
+					 * BoardPosition newPos = null;
+					 * 
+					 * switch (c) {
+					 * case "LEFT":
+					 * newPos = head.getCellLeft();
+					 * break;
+					 * case "RIGHT":
+					 * newPos = head.getCellRight();
+					 * break;
+					 * case "UP":
+					 * newPos = head.getCellAbove();
+					 * break;
+					 * case "DOWN":
+					 * newPos = head.getCellBelow();
+					 * break;
+					 * }
+					 * 
+					 * hs.setFuture(new Cell(newPos));
+					 */
 				}
 			}
 		}

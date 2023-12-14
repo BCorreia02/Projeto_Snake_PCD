@@ -109,7 +109,6 @@ public class Client {
 		if (c != null) {
 			out.writeObject(c);
 			out.flush();
-			board.getBoardComponentClient().setLastPressedDirection(null);
 			System.out.println("Tecla enviada");
 		}
 
