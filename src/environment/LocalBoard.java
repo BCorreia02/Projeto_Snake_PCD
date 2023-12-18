@@ -13,9 +13,9 @@ import game.AutomaticSnake;
  */
 public class LocalBoard extends Board {
 
-	private static final int NUM_SNAKES = 2;
-	private static final int NUM_OBSTACLES = 10;
-	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 5;
+	private static final int NUM_SNAKES = 1;
+	private static final int NUM_OBSTACLES = 2;
+	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 2;
 
 	public LocalBoard() {
 

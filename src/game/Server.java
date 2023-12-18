@@ -19,12 +19,9 @@ import gui.SnakeGui;
 import java.awt.event.KeyEvent;
 
 public class Server {
-	private ServerSocket server;
 
 	public static final int port = 9081;
 	private ServerSocket ss;
-	private ObjectInputStream in; // deixou de estar = null
-	private ObjectOutputStream out; // deixou de estar = null
 	private LocalBoard board;
 	private SnakeGui gui;
 
@@ -34,7 +31,7 @@ public class Server {
 	public Server() throws IOException {
 		this.ss = new ServerSocket(port);
 		this.board = new LocalBoard();
-		this.gui = new SnakeGui(board, 600, 0);
+		this.gui = new SnakeGui(board, 600, 0, false);
 		gui.init();
 
 	}
@@ -84,7 +81,6 @@ public class Server {
 
 		private Socket clientSocket;
 		private ObjectInputStream in;
-		private HumanSnake hs;
 
 		ClientHandler(Socket socket) throws ClassNotFoundException, IOException, InterruptedException {
 
@@ -96,7 +92,6 @@ public class Server {
 			id++;
 			board.addSnake(hs);
 			System.out.println("Inicio client handler " + hs.toString());
-			this.hs = hs;
 		}
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
@@ -172,7 +167,7 @@ public class Server {
 			synchronized (outs) {
 				for (ObjectOutputStream out : outs)
 					try {
-						// System.out.println("mapa -> cliente ");
+						System.out.println(outs);
 						out.writeObject(map);
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -181,7 +176,8 @@ public class Server {
 		}
 
 		public void handleOut() throws ClassNotFoundException, IOException, InterruptedException {
-			updateMaps(board.getHashMap());
+			ConcurrentHashMap<BoardPosition, CellContent> map = board.getHashMap();
+			updateMaps(map);
 			out.flush();
 			Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
 		}

@@ -37,7 +37,7 @@ public class Client {
 		this.porto = porto;
 		this.bcc = new BoardComponentClient(null);
 		this.board = new RemoteBoard(bcc, true);
-		this.gui = new SnakeGui(board, 600, 0);
+		this.gui = new SnakeGui(board, 600, 0, true);
 		gui.init();
 	}
 
@@ -97,10 +97,10 @@ public class Client {
 	public void handleRcvPacote() throws ClassNotFoundException, IOException {
 		Object received = in.readObject();
 		if (received != null && received instanceof ConcurrentHashMap) {
-			// System.out.println("Novo map");
 			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) received;
-			bcc.setNewMap(mapa);
-			this.board = new RemoteBoard(bcc, true);
+			System.out.println(mapa);
+			gui.getBoardComponent().setNewMap(mapa);
+			gui.getBoardComponent().repaint();
 		}
 	}
 

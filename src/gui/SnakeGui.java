@@ -31,13 +31,14 @@ public class SnakeGui extends JFrame implements Observer {
 	private JFrame frame;
 	private BoardComponent boardGui;
 	private Board board;
+	private boolean isRemote;
 
-	public SnakeGui(Board board, int x, int y) {
+	public SnakeGui(Board board, int x, int y, boolean a) {
 		super();
 		if (board == null) {
 			throw new IllegalArgumentException("Board cannot be null");
 		}
-
+		isRemote = a;
 		this.board = board;
 		frame = new JFrame("The Snake Game: " + (board instanceof LocalBoard ? "Local" : "Remote"));
 		frame.setLocation(x, y);
@@ -63,7 +64,7 @@ public class SnakeGui extends JFrame implements Observer {
 	private void buildGui() {
 		frame.setLayout(new BorderLayout());
 
-		boardGui = new BoardComponent(board);
+		boardGui = new BoardComponent(board, isRemote);
 		boardGui.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
 		frame.add(boardGui, BorderLayout.CENTER);
 

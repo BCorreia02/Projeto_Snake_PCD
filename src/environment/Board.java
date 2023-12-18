@@ -25,7 +25,6 @@ public abstract class Board extends Observable implements Serializable {
 	protected LinkedList<Obstacle> obstacles = new LinkedList<Obstacle>();
 	public ObstacleMover obstacleMover;
 	public int goalValue = 1;
-	ConcurrentHashMap<BoardPosition, CellContent> boardMap = new ConcurrentHashMap<>();
 
 	public Board() {
 		cells = new Cell[NUM_COLUMNS][NUM_ROWS];
@@ -50,23 +49,16 @@ public abstract class Board extends Observable implements Serializable {
 	}
 
 	public ConcurrentHashMap<BoardPosition, CellContent> getHashMap() {
-		makeHashMap();
-		return boardMap;
-	}
-
-	public void makeHashMap() {
+		ConcurrentHashMap<BoardPosition, CellContent> map = new ConcurrentHashMap<>();
 		for (int i = 0; i < cells.length; i++) {
 			for (int j = 0; j < cells.length; j++) {
-				BoardPosition position = new BoardPosition(i, j);
 				Cell cell = cells[i][j];
-
 				GameElement gameElement = cell.getGameElement();
 				Snake snake = cell.getOcuppyingSnake();
-
-				CellContent cellContent = new CellContent(gameElement, snake);
-				boardMap.put(position, cellContent);
+				map.put(new BoardPosition(i, j), new CellContent(gameElement, snake));
 			}
 		}
+		return map;
 	}
 
 	public void endGame() {

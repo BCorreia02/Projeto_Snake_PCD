@@ -9,11 +9,11 @@ import environment.LocalBoard;
 import game.Server;
 
 public class Main {
-	public static void main(String[] args) {
-		LocalBoard board = new LocalBoard();
+    public static void main(String[] args) {
+        LocalBoard board = new LocalBoard();
 
         // Initialize and start the GUI
-        SnakeGui game = new SnakeGui(board, 600, 0);
+        SnakeGui game = new SnakeGui(board, 600, 0, false);
         game.init();
-	}
+    }
 }
