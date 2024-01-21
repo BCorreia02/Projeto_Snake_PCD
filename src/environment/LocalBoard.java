@@ -3,6 +3,9 @@ package environment;
 import game.Obstacle;
 import game.ObstacleMover;
 import game.Snake;
+
+import java.util.LinkedList;
+
 import game.AutomaticSnake;
 
 /**
@@ -32,6 +35,12 @@ public class LocalBoard extends Board {
 			obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
 		}
 		addGoal();
+	}
+
+	public void addPlayer(Snake a) {
+		snakes.add(a);
+		a.start();
+		setChanged();
 	}
 
 	public void init() {

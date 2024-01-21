@@ -36,6 +36,31 @@ public abstract class Board extends Observable implements Serializable {
 
 	}
 
+	public boolean isObstacleAt(BoardPosition p) {
+		LinkedList<Obstacle> obstacles = this.getObstacles();
+		for (Obstacle o : obstacles) {
+			if (o.getCurrent() == p) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public boolean isSnakeAt(BoardPosition p) {
+		LinkedList<Snake> snakes = this.getSnakes();
+		for (Snake s : snakes) {
+			LinkedList<Cell> snakecells = s.getCells();
+			for (Cell c : snakecells) {
+				if (c.getPosition() == p) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public List<BoardPosition> getBlockedCells() {
 		List<BoardPosition> blocked = new ArrayList<>();
 		for (int x = 0; x < NUM_COLUMNS; x++) {

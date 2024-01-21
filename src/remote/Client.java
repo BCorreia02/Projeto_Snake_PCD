@@ -34,6 +34,7 @@ public class Client {
 
 	Client(InetAddress ip, int porto) throws IOException {
 		this.ip = ip;
+
 		this.porto = porto;
 		this.bcc = new BoardComponentClient(null);
 		this.board = new RemoteBoard(bcc, true);
@@ -60,10 +61,6 @@ public class Client {
 		Client client = new Client(InetAddress.getByName(null), Server.port);
 		client.runClient();
 		client.setBoardComponentClient(client.getBoardComponentClient());
-	}
-
-	private SnakeGui getGui() {
-		return gui;
 	}
 
 	public void runClient() throws IOException {
@@ -98,7 +95,7 @@ public class Client {
 		Object received = in.readObject();
 		if (received != null && received instanceof ConcurrentHashMap) {
 			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) received;
-			System.out.println(mapa);
+			// System.out.println(mapa);
 			gui.getBoardComponent().setNewMap(mapa);
 			gui.getBoardComponent().repaint();
 		}

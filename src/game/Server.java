@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -81,47 +82,29 @@ public class Server {
 
 		private Socket clientSocket;
 		private ObjectInputStream in;
-
+		
 		ClientHandler(Socket socket) throws ClassNotFoundException, IOException, InterruptedException {
-
-			this.clientSocket = socket;
-			in = new ObjectInputStream(this.clientSocket.getInputStream());
-			HumanSnake hs = new HumanSnake(id, board); /// while (true) englobava as a criacao de um HumanPlayer -errado
-														/// pq por cada cliente que se liga ao servidor apenas � criado
-														/// um humanplayer
-			id++;
-			board.addSnake(hs);
-			System.out.println("Inicio client handler " + hs.toString());
-		}
+            this.clientSocket = socket;
+            in = new ObjectInputStream(this.clientSocket.getInputStream());
+            HumanSnake hs = new HumanSnake(id, board);
+            id++;
+            board.addPlayer(hs);
+//            System.out.println("Inicio client handler " + hs.toString());
+        }
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
 			while (!clientSocket.isClosed()) {
 				Object received = in.readObject();
 				if (received != null) {
 					String c = (String) received;
-					System.out.println("Key received " + c);
-
-					/*
-					 * BoardPosition head = hs.getCells().getLast().getPosition();
-					 * BoardPosition newPos = null;
-					 * 
-					 * switch (c) {
-					 * case "LEFT":
-					 * newPos = head.getCellLeft();
-					 * break;
-					 * case "RIGHT":
-					 * newPos = head.getCellRight();
-					 * break;
-					 * case "UP":
-					 * newPos = head.getCellAbove();
-					 * break;
-					 * case "DOWN":
-					 * newPos = head.getCellBelow();
-					 * break;
-					 * }
-					 * 
-					 * hs.setFuture(new Cell(newPos));
-					 */
+					LinkedList<Snake> snakes = board.getSnakes();
+					for (Snake s : snakes) {
+						if (s instanceof HumanSnake) {
+							((HumanSnake) s).setDirection(c);
+						}
+					}
+//					System.out.println("Key received " + c);
+					
 				}
 			}
 		}
@@ -167,7 +150,7 @@ public class Server {
 			synchronized (outs) {
 				for (ObjectOutputStream out : outs)
 					try {
-						System.out.println(outs);
+//						System.out.println(outs);
 						out.writeObject(map);
 					} catch (IOException e) {
 						e.printStackTrace();
