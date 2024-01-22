@@ -10,8 +10,10 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
 import environment.BoardPosition;
+import environment.Cell;
 import environment.CellContent;
 import game.Server;
+import game.Snake;
 import gui.SnakeGui;
 
 /**
@@ -93,10 +95,15 @@ public class Client {
 
 	public void handleRcvPacote() throws ClassNotFoundException, IOException {
 		Object received = in.readObject();
-		if (received != null && received instanceof ConcurrentHashMap) {
-			ConcurrentHashMap<BoardPosition, CellContent> mapa = (ConcurrentHashMap<BoardPosition, CellContent>) received;
-			// System.out.println(mapa);
-			gui.getBoardComponent().setNewMap(mapa);
+		if (received != null && received instanceof Mensagem) {
+			Mensagem mapa = (Mensagem) received;
+			gui.getBoardComponent().setNewMap(mapa.getMap(), mapa.getSnakeList());
+			
+			for (Snake s : mapa.getSnakeList()) {
+				for (Cell c : s.getCells()) {
+					System.out.println(s + "" + c);
+				}
+		}
 			gui.getBoardComponent().repaint();
 		}
 	}

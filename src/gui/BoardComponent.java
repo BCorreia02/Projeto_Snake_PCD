@@ -39,6 +39,7 @@ public class BoardComponent extends JComponent implements KeyListener {
 	private Image obstacleImage;
 	private ConcurrentHashMap<BoardPosition, CellContent> boardMap;
 	private boolean isRemote;
+	private LinkedList<Snake> snakes;
 
 	public BoardComponent(Board board, boolean a) {
 		this.board = board;
@@ -49,8 +50,17 @@ public class BoardComponent extends JComponent implements KeyListener {
 		addKeyListener(this);
 	}
 
-	public void setNewMap(ConcurrentHashMap<BoardPosition, CellContent> mapa) {
+	public void setNewMap(ConcurrentHashMap<BoardPosition, CellContent> mapa, LinkedList<Snake> snakes) {
 		this.boardMap = mapa;
+		this.snakes = snakes;
+
+		/* 
+		for (Snake s : snakes) {
+			for (Cell c : s.getCells()) {
+				System.out.println(s + "" + c);
+			}
+		}
+		*/
 	}
 
 	@Override

@@ -13,10 +13,10 @@ public abstract class Snake extends Thread implements Serializable {
 
 	private static final int DELTA_SIZE = 10;
 	protected LinkedList<Cell> cells = new LinkedList<>();
-	private int id;
-	private Board board;
-	protected int toIncrease = 0;
-	private Cell future;
+	private transient int id;
+	private transient Board board;
+	protected transient int toIncrease = 0;
+	private transient Cell future;
 
 	public Snake(int id, Board board) {
 		this.id = id;
@@ -56,18 +56,20 @@ public abstract class Snake extends Thread implements Serializable {
 	}
 
 	protected void move() throws InterruptedException {
+		if (future != null) {
+			future.request(this);
 
-		future.request(this);
+			cells.addFirst(future);
 
-		cells.addFirst(future);
+			if (toIncrease == 0 || cells.size() == DELTA_SIZE) {
+				Cell tail = cells.removeLast();
+				tail.release();
+			}
 
-		if (toIncrease == 0 || cells.size() == DELTA_SIZE) {
-			Cell tail = cells.removeLast();
-			tail.release();
+			if (toIncrease != 0)
+				toIncrease--;
+
 		}
-
-		if (toIncrease != 0)
-			toIncrease--;
 
 	}
 

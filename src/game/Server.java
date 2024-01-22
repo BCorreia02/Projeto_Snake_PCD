@@ -17,6 +17,8 @@ import environment.Cell;
 import environment.CellContent;
 import environment.LocalBoard;
 import gui.SnakeGui;
+import remote.Mensagem;
+
 import java.awt.event.KeyEvent;
 
 public class Server {
@@ -82,15 +84,15 @@ public class Server {
 
 		private Socket clientSocket;
 		private ObjectInputStream in;
-		
+
 		ClientHandler(Socket socket) throws ClassNotFoundException, IOException, InterruptedException {
-            this.clientSocket = socket;
-            in = new ObjectInputStream(this.clientSocket.getInputStream());
-            HumanSnake hs = new HumanSnake(id, board);
-            id++;
-            board.addPlayer(hs);
-//            System.out.println("Inicio client handler " + hs.toString());
-        }
+			this.clientSocket = socket;
+			in = new ObjectInputStream(this.clientSocket.getInputStream());
+			HumanSnake hs = new HumanSnake(id, board);
+			id++;
+			board.addPlayer(hs);
+			// System.out.println("Inicio client handler " + hs.toString());
+		}
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
 			while (!clientSocket.isClosed()) {
@@ -103,8 +105,8 @@ public class Server {
 							((HumanSnake) s).setDirection(c);
 						}
 					}
-//					System.out.println("Key received " + c);
-					
+					// System.out.println("Key received " + c);
+
 				}
 			}
 		}
@@ -146,12 +148,13 @@ public class Server {
 			outs.add(out);
 		}
 
-		private void updateMaps(ConcurrentHashMap<BoardPosition, CellContent> map) {
+		private void updateMaps(Mensagem m) {
 			synchronized (outs) {
 				for (ObjectOutputStream out : outs)
 					try {
-//						System.out.println(outs);
-						out.writeObject(map);
+						// System.out.println(outs);
+						out.reset();
+						out.writeObject(m);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -160,7 +163,13 @@ public class Server {
 
 		public void handleOut() throws ClassNotFoundException, IOException, InterruptedException {
 			ConcurrentHashMap<BoardPosition, CellContent> map = board.getHashMap();
-			updateMaps(map);
+			Mensagem m = new Mensagem(map, board.getSnakes());
+			updateMaps(m);
+			for (Snake s : m.getSnakeList()) {
+				for (Cell c : s.getCells()) {
+					System.out.println(s + "" + c);
+				}
+			}
 			out.flush();
 			Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
 		}
