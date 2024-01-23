@@ -1,13 +1,15 @@
 package game;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import environment.Board;
 import environment.BoardPosition;
-import environment.Cell;
+
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
 
 public class Obstacle extends GameElement {
 

@@ -13,6 +13,14 @@ import game.Obstacle;
 import game.ObstacleMover;
 import game.Snake;
 
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
+
 public abstract class Board extends Observable implements Serializable {
 
 	protected Cell[][] cells;

@@ -13,13 +13,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import environment.Board;
 import environment.BoardPosition;
-import environment.Cell;
 import environment.CellContent;
 import environment.LocalBoard;
 import gui.SnakeGui;
 import remote.Mensagem;
 
-import java.awt.event.KeyEvent;
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
 
 public class Server {
 

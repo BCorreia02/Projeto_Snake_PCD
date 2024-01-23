@@ -6,12 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,9 +21,16 @@ import game.HumanSnake;
 import game.Obstacle;
 import game.Snake;
 import game.GameElement;
-import utils.Direction;
 
-public class BoardComponentClient extends JComponent implements Serializable {
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
+
+public class BoardComponentClient extends JComponent {
 
 	private static final long serialVersionUID = 1L;
 

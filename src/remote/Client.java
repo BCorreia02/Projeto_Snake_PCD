@@ -1,28 +1,20 @@
 package remote;
 
-import java.awt.Frame;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
-
-import environment.BoardPosition;
-import environment.Cell;
-import environment.CellContent;
 import game.Server;
-import game.Snake;
 import gui.SnakeGui;
 
 /**
- * Remore client, only for part II
  * 
- * @author luismota
+ *
+ * 
+ * @author bcorreia02
  *
  */
-
 public class Client {
 
 	private ObjectInputStream in;
@@ -33,7 +25,6 @@ public class Client {
 	private int porto;
 	private SnakeGui gui;
 	private BoardComponentClient bcc;
-	private String LastKey;
 
 	Client(InetAddress ip, int porto) throws IOException {
 		this.ip = ip;

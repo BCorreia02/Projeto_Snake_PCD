@@ -9,6 +9,14 @@ import environment.Board;
 import environment.BoardPosition;
 import environment.Cell;
 
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
+
 public abstract class Snake extends Thread implements Serializable {
 
 	private static final int DELTA_SIZE = 10;

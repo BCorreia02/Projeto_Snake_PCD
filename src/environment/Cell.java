@@ -11,9 +11,10 @@ import game.Obstacle;
 import game.Snake;
 
 /**
- * Main class for game representation.
  * 
- * @author luismota
+ *
+ * 
+ * @author bcorreia02
  *
  */
 public class Cell implements Serializable {

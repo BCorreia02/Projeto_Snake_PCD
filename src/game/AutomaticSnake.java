@@ -1,8 +1,15 @@
 package game;
 
-import environment.LocalBoard;
 import environment.Board;
 import environment.BoardPosition;
+
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
 
 public class AutomaticSnake extends Snake {
 

@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -17,13 +14,12 @@ import environment.Board;
 import environment.LocalBoard;
 import game.AutomaticSnake;
 import game.Snake;
-import remote.RemoteBoard;
 
 /**
- * Class to create and configure GUI.
- * Only the listener to the button should be edited, see TODO below.
  * 
- * @author luismota
+ *
+ * 
+ * @author bcorreia02
  *
  */
 public class SnakeGui extends JFrame implements Observer {

@@ -1,14 +1,18 @@
 package game;
 
-import java.io.Serializable;
-
 import environment.Board;
-import environment.BoardPosition;
 
-public class Goal extends GameElement implements Serializable {
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
+
+public class Goal extends GameElement {
 	private int value = 1;
 	private Board board;
-	private BoardPosition pos;
 
 	public static final int MAX_VALUE = 10;
 

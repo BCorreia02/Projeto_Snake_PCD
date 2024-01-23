@@ -3,12 +3,12 @@ package environment;
 import java.io.Serializable;
 
 /**
- * Classe representing a position on the board, with some utilities
  * 
- * @author luismota
+ *
+ * 
+ * @author bcorreia02
  *
  */
-
 public class BoardPosition implements Serializable {
 	public final int x;
 	public final int y;

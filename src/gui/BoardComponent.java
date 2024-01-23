@@ -28,9 +28,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 /**
- * Graphical representarion of the game. This class should not be edited.
  * 
- * @author luismota
+ *
+ * 
+ * @author bcorreia02
  *
  */
 public class BoardComponent extends JComponent implements KeyListener {
@@ -39,7 +40,6 @@ public class BoardComponent extends JComponent implements KeyListener {
 	private Image obstacleImage;
 	private ConcurrentHashMap<BoardPosition, CellContent> boardMap;
 	private boolean isRemote;
-	private LinkedList<Snake> snakes;
 	private String lastDirection;
 
 	public BoardComponent(Board board, boolean a) {
@@ -53,7 +53,6 @@ public class BoardComponent extends JComponent implements KeyListener {
 
 	public void setNewMap(ConcurrentHashMap<BoardPosition, CellContent> mapa, LinkedList<Snake> snakes) {
 		this.boardMap = mapa;
-		this.snakes = snakes;
 
 		/*
 		 * for (Snake s : snakes) {

@@ -8,6 +8,14 @@ import environment.BoardPosition;
 import environment.CellContent;
 import game.Snake;
 
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
+
 public class Mensagem implements Serializable {
     private LinkedList<Snake> snakeList;
     ConcurrentHashMap<BoardPosition, CellContent> map;

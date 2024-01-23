@@ -3,9 +3,15 @@ package game;
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import environment.Board;
-import environment.LocalBoard;
+
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
 
 public class ObstacleMover extends Thread implements Serializable {
 
@@ -26,7 +32,7 @@ public class ObstacleMover extends Thread implements Serializable {
 		return board;
 	}
 
-	public static class Task implements Runnable{
+	public static class Task implements Runnable {
 
 		private Obstacle obstacle;
 

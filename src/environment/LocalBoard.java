@@ -3,15 +3,13 @@ package environment;
 import game.Obstacle;
 import game.ObstacleMover;
 import game.Snake;
-
-import java.util.LinkedList;
-
 import game.AutomaticSnake;
 
 /**
- * Class representing the state of a game running locally
  * 
- * @author luismota
+ *
+ * 
+ * @author bcorreia02
  *
  */
 public class LocalBoard extends Board {

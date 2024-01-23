@@ -5,6 +5,14 @@ import java.io.Serializable;
 import game.GameElement;
 import game.Snake;
 
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
+
 public class CellContent implements Serializable {
 
     private GameElement gameElement;

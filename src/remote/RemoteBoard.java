@@ -7,13 +7,13 @@ import environment.CellContent;
 import java.awt.event.KeyEvent;
 
 /**
- * Remote representation of the game, no local threads involved.
- * Game state will be changed when updated info is received from Srver.
- * Only for part II of the project.
  * 
- * @author luismota
+ *
+ * 
+ * @author bcorreia02
  *
  */
+
 public class RemoteBoard extends Board {
 
 	private BoardComponentClient boardComponentClient;
