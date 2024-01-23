@@ -33,6 +33,7 @@ public class Client {
 	private int porto;
 	private SnakeGui gui;
 	private BoardComponentClient bcc;
+	private String LastKey;
 
 	Client(InetAddress ip, int porto) throws IOException {
 		this.ip = ip;
@@ -98,12 +99,6 @@ public class Client {
 		if (received != null && received instanceof Mensagem) {
 			Mensagem mapa = (Mensagem) received;
 			gui.getBoardComponent().setNewMap(mapa.getMap(), mapa.getSnakeList());
-			
-			for (Snake s : mapa.getSnakeList()) {
-				for (Cell c : s.getCells()) {
-					System.out.println(s + "" + c);
-				}
-		}
 			gui.getBoardComponent().repaint();
 		}
 	}
@@ -111,11 +106,11 @@ public class Client {
 	public void handleSend() throws IOException { // envio numa thread separada
 		String c = board.getBoardComponentClient().getLastPressedDirection();
 		if (c != null) {
+			out.reset();
 			out.writeObject(c);
 			out.flush();
-			System.out.println("Tecla enviada");
+			System.out.println("Tecla enviada " + c);
 		}
-
 	}
 
 }

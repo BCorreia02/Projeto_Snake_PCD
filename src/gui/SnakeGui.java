@@ -15,7 +15,9 @@ import javax.swing.JFrame;
 
 import environment.Board;
 import environment.LocalBoard;
+import game.AutomaticSnake;
 import game.Snake;
+import remote.RemoteBoard;
 
 /**
  * Class to create and configure GUI.
@@ -68,19 +70,21 @@ public class SnakeGui extends JFrame implements Observer {
 		boardGui = new BoardComponent(board, isRemote);
 		boardGui.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
 		frame.add(boardGui, BorderLayout.CENTER);
+		if (board instanceof LocalBoard) {
+			JButton resetObstaclesButton = new JButton("Reset snakes' directions");
+			resetObstaclesButton.addActionListener(new ActionListener() {
 
-		JButton resetObstaclesButton = new JButton("Reset snakes' directions");
-		resetObstaclesButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				for (Snake snake : board.getSnakes()) {
-					snake.interrupt();
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					for (Snake snake : board.getSnakes()) {
+						if (snake instanceof AutomaticSnake)
+							snake.interrupt();
+					}
 				}
-			}
 
-		});
-		frame.add(resetObstaclesButton, BorderLayout.SOUTH);
+			});
+			frame.add(resetObstaclesButton, BorderLayout.SOUTH);
+		}
 
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -58,7 +58,6 @@ public class BoardComponentClient extends JComponent implements Serializable {
 
 		super.paintComponent(g);
 		final double CELL_WIDTH = getHeight() / (double) NUM_COLUMNS;
-		System.out.println(mapToString(boardMap));
 		for (Map.Entry<BoardPosition, CellContent> entry : boardMap.entrySet()) {
 
 			BoardPosition key = entry.getKey();

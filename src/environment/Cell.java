@@ -1,12 +1,9 @@
 package environment;
 
 import java.io.Serializable;
-import java.nio.channels.InterruptedByTimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import javax.sound.midi.SysexMessage;
 
 import game.GameElement;
 import game.Goal;
@@ -62,13 +59,6 @@ public class Cell implements Serializable {
 	public void request(Snake snake) throws InterruptedException {
 		lock.lock();
 		try {
-
-			/*
-			 * if (gameElement instanceof Obstacle && ((Obstacle) gameElement).isMovable())
-			 * {
-			 * block();
-			 * }
-			 */
 
 			while (this.isOcupied()) {
 				cellEmpty.await();

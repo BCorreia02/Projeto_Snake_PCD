@@ -91,24 +91,51 @@ public class Server {
 			HumanSnake hs = new HumanSnake(id, board);
 			id++;
 			board.addPlayer(hs);
+			hs.doInitialPositioning();
 			// System.out.println("Inicio client handler " + hs.toString());
 		}
 
 		public void handleIn() throws ClassNotFoundException, IOException, InterruptedException {
-			while (!clientSocket.isClosed()) {
-				Object received = in.readObject();
-				if (received != null) {
-					String c = (String) received;
-					LinkedList<Snake> snakes = board.getSnakes();
-					for (Snake s : snakes) {
-						if (s instanceof HumanSnake) {
-							((HumanSnake) s).setDirection(c);
-						}
+			while (!clientSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
+				try {
+					Object received = in.readObject();
+					if (received != null) {
+						String c = (String) received;
+						processCommand(c);
 					}
-					// System.out.println("Key received " + c);
+				} catch (IOException e) {
+					System.err.println("IO Exception: " + e.getMessage());
+					break;
+				} catch (ClassNotFoundException e) {
+					System.err.println("Class not found: " + e.getMessage());
+
+				} catch (ClassCastException e) {
+					System.err.println("Received object is not a String: " + e.getMessage());
 
 				}
 			}
+
+		}
+
+		private void processCommand(String command) {
+			LinkedList<Snake> snakes = board.getSnakes();
+			for (Snake s : snakes) {
+				if (s instanceof HumanSnake) {
+					HumanSnake humanSnake = (HumanSnake) s;
+					humanSnake.setDirection(command);
+					try {
+						humanSnake.move();
+						board.setChanged();
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt(); // Set the interrupt flag.
+						System.err.println("Thread was interrupted: " + e.getMessage());
+						break; // Optional: Decide whether you want to stop processing after an interrupt.
+					}
+				}
+			}
+			// Optionally, log the received command at a debug or trace level, not info or
+			// error.
+			// logger.debug("Key received: {}", command); // Use a proper logging framework.
 		}
 
 		@Override
@@ -152,7 +179,6 @@ public class Server {
 			synchronized (outs) {
 				for (ObjectOutputStream out : outs)
 					try {
-						// System.out.println(outs);
 						out.reset();
 						out.writeObject(m);
 					} catch (IOException e) {
@@ -165,11 +191,6 @@ public class Server {
 			ConcurrentHashMap<BoardPosition, CellContent> map = board.getHashMap();
 			Mensagem m = new Mensagem(map, board.getSnakes());
 			updateMaps(m);
-			for (Snake s : m.getSnakeList()) {
-				for (Cell c : s.getCells()) {
-					System.out.println(s + "" + c);
-				}
-			}
 			out.flush();
 			Thread.sleep(Board.REMOTE_REFRESH_INTERVAL);
 		}
@@ -185,13 +206,11 @@ public class Server {
 			try {
 				handleConnection();
 			} catch (ClassNotFoundException | IOException | InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 				try {
 					out.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

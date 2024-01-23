@@ -40,6 +40,7 @@ public class BoardComponent extends JComponent implements KeyListener {
 	private ConcurrentHashMap<BoardPosition, CellContent> boardMap;
 	private boolean isRemote;
 	private LinkedList<Snake> snakes;
+	private String lastDirection;
 
 	public BoardComponent(Board board, boolean a) {
 		this.board = board;
@@ -54,13 +55,13 @@ public class BoardComponent extends JComponent implements KeyListener {
 		this.boardMap = mapa;
 		this.snakes = snakes;
 
-		/* 
-		for (Snake s : snakes) {
-			for (Cell c : s.getCells()) {
-				System.out.println(s + "" + c);
-			}
-		}
-		*/
+		/*
+		 * for (Snake s : snakes) {
+		 * for (Cell c : s.getCells()) {
+		 * System.out.println(s + "" + c);
+		 * }
+		 * }
+		 */
 	}
 
 	@Override
@@ -136,97 +137,101 @@ public class BoardComponent extends JComponent implements KeyListener {
 				}
 			}
 		} else {
-
-			super.paintComponent(g);
+			if (g != null)
+				super.paintComponent(g);
 			final double CELL_WIDTH = getHeight() / (double) LocalBoard.NUM_COLUMNS;
-			for (Map.Entry<BoardPosition, CellContent> entry : boardMap.entrySet()) {
+			if (boardMap.entrySet() != null) {
+				for (Map.Entry<BoardPosition, CellContent> entry : boardMap.entrySet()) {
+					if (entry != null) {
+						BoardPosition key = entry.getKey();
+						CellContent value = entry.getValue();
+						Image image = null;
+						Snake snake = null;
+						GameElement el = null;
+						if (value.hasGameElement()) {
+							el = value.getGameElement();
+							if (el instanceof Obstacle) {
 
-				BoardPosition key = entry.getKey();
-				CellContent value = entry.getValue();
-				Image image = null;
-				Snake snake = null;
-				GameElement el = null;
-				if (value.getGameElement() != null) {
-					el = value.getGameElement();
-					if (el instanceof Obstacle) {
+								Obstacle obstacle = (Obstacle) el;
+								int ObstacleX = obstacle.getCurrent().x;
+								int ObstacleY = obstacle.getCurrent().y;
+								image = obstacleImage;
 
-						Obstacle obstacle = (Obstacle) el;
-						int ObstacleX = obstacle.getCurrent().x;
-						int ObstacleY = obstacle.getCurrent().y;
-						image = obstacleImage;
+								g.setColor(Color.BLACK);
+								g.drawImage(image, (int) Math.round(ObstacleX * CELL_WIDTH),
+										(int) Math.round(ObstacleY * CELL_WIDTH),
+										(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH), null);
+								// write number of remaining moves
+								g.setColor(Color.WHITE);
+								g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
+								g.drawString(obstacle.getRemainingMoves() + "",
+										(int) Math.round((ObstacleX + 0.15) * CELL_WIDTH),
+										(int) Math.round((ObstacleY + 0.9) * CELL_WIDTH));
+
+							} else if (el instanceof Goal) {
+
+								Goal goal = (Goal) el;
+
+								int goalX = key.getX();
+								int goalY = key.getY();
+
+								g.setColor(Color.RED);
+								g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
+								g.drawString(goal.getValue() + "", (int) Math.round((goalX + 0.15) * CELL_WIDTH),
+										(int) Math.round((goalY + 0.9) * CELL_WIDTH));
+							}
+						}
+
+						if (value.hasSnake()) {
+							snake = value.getSnake();
+							// different color for human player...
+							if (snake instanceof HumanSnake)
+								g.setColor(Color.ORANGE);
+							else
+								g.setColor(Color.LIGHT_GRAY);
+							LinkedList<Cell> cobra = snake.getCells();
+							for (int i = 0; i != cobra.size(); i++) {
+
+								Cell bloco = cobra.get(i);
+								int blocoX = bloco.getPosition().x;
+								int blocoY = bloco.getPosition().y;
+
+								g.fillRect((int) Math.round(blocoX * CELL_WIDTH),
+										(int) Math.round(blocoY * CELL_WIDTH),
+										(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH));
+							}
+						}
 
 						g.setColor(Color.BLACK);
-						g.drawImage(image, (int) Math.round(ObstacleX * CELL_WIDTH),
-								(int) Math.round(ObstacleY * CELL_WIDTH),
-								(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH), null);
-						// write number of remaining moves
-						g.setColor(Color.WHITE);
-						g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
-						g.drawString(obstacle.getRemainingMoves() + "",
-								(int) Math.round((ObstacleX + 0.15) * CELL_WIDTH),
-								(int) Math.round((ObstacleY + 0.9) * CELL_WIDTH));
+						g.drawLine((int) Math.round(key.getX() * CELL_WIDTH), 0,
+								(int) Math.round(key.getX() * CELL_WIDTH),
+								(int) Math.round(RemoteBoard.NUM_ROWS * CELL_WIDTH));
 
-					} else if (el instanceof Goal) {
-
-						Goal goal = (Goal) el;
-
-						int goalX = key.getX();
-						int goalY = key.getY();
-
-						g.setColor(Color.RED);
-						g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, (int) CELL_WIDTH));
-						g.drawString(goal.getValue() + "", (int) Math.round((goalX + 0.15) * CELL_WIDTH),
-								(int) Math.round((goalY + 0.9) * CELL_WIDTH));
-					}
-				}
-
-				if (value.getSnake() != null) {
-					snake = value.getSnake();
-					// different color for human player...
-					if (snake instanceof HumanSnake)
-						g.setColor(Color.ORANGE);
-					else
-						g.setColor(Color.LIGHT_GRAY);
-					LinkedList<Cell> cobra = snake.getCells();
-					for (int i = 0; i != cobra.size(); i++) {
-
-						Cell bloco = cobra.get(i);
-						int blocoX = bloco.getPosition().x;
-						int blocoY = bloco.getPosition().y;
-
-						g.fillRect((int) Math.round(blocoX * CELL_WIDTH),
-								(int) Math.round(blocoY * CELL_WIDTH),
-								(int) Math.round(CELL_WIDTH), (int) Math.round(CELL_WIDTH));
-					}
-				}
-
-				g.setColor(Color.BLACK);
-				g.drawLine((int) Math.round(key.getX() * CELL_WIDTH), 0, (int) Math.round(key.getX() * CELL_WIDTH),
-						(int) Math.round(RemoteBoard.NUM_ROWS * CELL_WIDTH));
-
-				for (int y1 = 1; y1 < RemoteBoard.NUM_ROWS; y1++) {
-					g.drawLine(0, (int) Math.round(y1 * CELL_WIDTH),
-							(int) Math.round(RemoteBoard.NUM_COLUMNS * CELL_WIDTH),
-							(int) Math.round(y1 * CELL_WIDTH));
-				}
-
-				if (snake != null) {
-					LinkedList<Cell> pedacos = snake.getCells();
-					if (pedacos.size() > 0) {
-						g.setColor(new Color((int) (snake.getId() * 1000)));
-
-						((Graphics2D) g).setStroke(new BasicStroke(5));
-						BoardPosition prevPos = snake.getPath().getFirst();
-						for (BoardPosition coordinate : snake.getPath()) {
-							if (prevPos != null) {
-								g.drawLine((int) Math.round((prevPos.x + .5) * CELL_WIDTH),
-										(int) Math.round((prevPos.y + .5) * CELL_WIDTH),
-										(int) Math.round((coordinate.x + .5) * CELL_WIDTH),
-										(int) Math.round((coordinate.y + .5) * CELL_WIDTH));
-							}
-							prevPos = coordinate;
+						for (int y1 = 1; y1 < RemoteBoard.NUM_ROWS; y1++) {
+							g.drawLine(0, (int) Math.round(y1 * CELL_WIDTH),
+									(int) Math.round(RemoteBoard.NUM_COLUMNS * CELL_WIDTH),
+									(int) Math.round(y1 * CELL_WIDTH));
 						}
-						((Graphics2D) g).setStroke(new BasicStroke(1));
+
+						if (snake != null) {
+							LinkedList<Cell> pedacos = snake.getCells();
+							if (pedacos.size() > 0) {
+								g.setColor(new Color((int) (snake.getId() * 1000)));
+
+								((Graphics2D) g).setStroke(new BasicStroke(5));
+								BoardPosition prevPos = snake.getPath().getFirst();
+								for (BoardPosition coordinate : snake.getPath()) {
+									if (prevPos != null) {
+										g.drawLine((int) Math.round((prevPos.x + .5) * CELL_WIDTH),
+												(int) Math.round((prevPos.y + .5) * CELL_WIDTH),
+												(int) Math.round((coordinate.x + .5) * CELL_WIDTH),
+												(int) Math.round((coordinate.y + .5) * CELL_WIDTH));
+									}
+									prevPos = coordinate;
+								}
+								((Graphics2D) g).setStroke(new BasicStroke(1));
+							}
+						}
 					}
 				}
 			}
@@ -238,7 +243,7 @@ public class BoardComponent extends JComponent implements KeyListener {
 	// releasing keys on the keyboard.
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("Got key pressed.");
+		// System.out.println("Got key pressed.");
 		if (e.getKeyCode() != KeyEvent.VK_LEFT && e.getKeyCode() != KeyEvent.VK_RIGHT &&
 				e.getKeyCode() != KeyEvent.VK_UP && e.getKeyCode() != KeyEvent.VK_DOWN)
 			return; // ignore
@@ -259,6 +264,14 @@ public class BoardComponent extends JComponent implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// ignore
+	}
+
+	public String getLastPressedDirection() {
+		return lastDirection;
+	}
+
+	public void setLastPressedDirection(String a) {
+		lastDirection = a;
 	}
 
 }

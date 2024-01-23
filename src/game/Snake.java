@@ -58,6 +58,8 @@ public abstract class Snake extends Thread implements Serializable {
 	protected void move() throws InterruptedException {
 		if (future != null) {
 			future.request(this);
+			if (this instanceof HumanSnake)
+				System.out.println("Passei o request");
 
 			cells.addFirst(future);
 
