@@ -25,6 +25,7 @@ public class Client {
 	private int porto;
 	private SnakeGui gui;
 	private BoardComponentClient bcc;
+	private Thread keySenderThread;
 
 	Client(InetAddress ip, int porto) throws IOException {
 		this.ip = ip;
@@ -60,6 +61,8 @@ public class Client {
 	public void runClient() throws IOException {
 		try {
 			connectToServer();
+			keySenderThread = new Thread(new KeySender()); // Create and start the KeySender thread
+			keySenderThread.start();
 			handleConnection();
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
@@ -67,6 +70,29 @@ public class Client {
 			in.close();
 			out.close();
 			this.cliente.close();
+			keySenderThread.interrupt();
+		}
+	}
+
+	private class KeySender implements Runnable {
+		public void run() {
+			try {
+				while (!Thread.currentThread().isInterrupted() && !cliente.isClosed()) {
+					String c = board.getBoardComponentClient().getLastPressedDirection();
+					if (c != null) {
+						synchronized (out) {
+							out.reset();
+							out.writeObject(c);
+							out.flush();
+						}
+						System.out.println("Tecla enviada " + c);
+					}
+					// Optional: add some sleep time to avoid busy waiting
+					Thread.sleep(100); // 100 ms sleep
+				}
+			} catch (IOException | InterruptedException e) {
+				System.out.println("KeySender interrupted or I/O error occurred.");
+			}
 		}
 	}
 
@@ -81,7 +107,6 @@ public class Client {
 	public void handleConnection() throws IOException, ClassNotFoundException {
 		while (!cliente.isClosed()) { // resolver exercicio exame da 1a epoca separar dados do client em duas threads
 			handleRcvPacote();
-			handleSend();
 		}
 	}
 
@@ -91,16 +116,6 @@ public class Client {
 			Mensagem mapa = (Mensagem) received;
 			gui.getBoardComponent().setNewMap(mapa.getMap(), mapa.getSnakeList());
 			gui.getBoardComponent().repaint();
-		}
-	}
-
-	public void handleSend() throws IOException { // envio numa thread separada
-		String c = board.getBoardComponentClient().getLastPressedDirection();
-		if (c != null) {
-			out.reset();
-			out.writeObject(c);
-			out.flush();
-			System.out.println("Tecla enviada " + c);
 		}
 	}
 

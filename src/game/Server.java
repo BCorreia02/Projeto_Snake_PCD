@@ -32,6 +32,7 @@ public class Server {
 	private ServerSocket ss;
 	private LocalBoard board;
 	private SnakeGui gui;
+	private Thread CHThread;
 
 	private int id = 100;
 	private List<ObjectOutputStream> outs = Collections.synchronizedList(new ArrayList<ObjectOutputStream>());
@@ -57,10 +58,10 @@ public class Server {
 		try {
 			while (!ss.isClosed()) {
 				Socket s = ss.accept();
-				ClientHandler ch = new ClientHandler(s);
+				CHThread = new Thread(new ClientHandler(s));
 				GameUpdater gu = new GameUpdater(s);
 				gu.start();
-				ch.start();
+				CHThread.start();
 			}
 		} finally {
 			closeServerSocket();
@@ -85,7 +86,7 @@ public class Server {
 
 	// -------------------------------------
 
-	public class ClientHandler extends Thread {
+	public class ClientHandler implements Runnable {
 
 		private Socket clientSocket;
 		private ObjectInputStream in;

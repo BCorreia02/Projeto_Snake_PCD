@@ -60,7 +60,7 @@ public class RemoteBoard extends Board {
 		if (boardComponentClient == null) {
 			throw new IllegalStateException("BoardComponentClient is not initialized");
 		}
-		boardComponentClient.setLastPressedDirection(null);
+		// boardComponentClient.setLastPressedDirection(null);
 		// If you need to notify the server about the key release, you can do it here
 	}
 
