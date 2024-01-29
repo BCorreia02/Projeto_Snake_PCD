@@ -7,8 +7,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-/* 
- * 
+/* 1 STREAM --> Thread Cliente (Send/Receive)
+ * 2 STREAMS --> Thread Cliente (Receive) , Thread Sender (Send)
  * 
  * 
  * 
@@ -30,14 +30,14 @@ public class Cliente extends Thread {
     public void run() {
         try {
             clientSocket = new Socket(addr, porto);
-            in = new ObjectInputStream(clientSocket.getInputStream());
             StringSender sender = new StringSender();
             sender.start();
+            in = new ObjectInputStream(clientSocket.getInputStream());
             while (!clientSocket.isClosed()) {
                 System.out.println((String) in.readObject());
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }
@@ -68,6 +68,7 @@ public class Cliente extends Thread {
                     Thread.sleep(2000);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

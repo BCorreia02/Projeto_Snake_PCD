@@ -9,6 +9,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/* 1 STREAM --> Thread Sender (Send), Thread Server (New Connections)
+ * 2 STREAMS --> Thread Cliente (Receive) , Thread Sender (Send), Thread Server (New Connections)
+ * 
+ * 
+ * 
+ * 
+ */
+
 public class Server {
 
     private ServerSocket ss;
@@ -32,8 +40,8 @@ public class Server {
         try {
             while (true) {
                 Socket cliSocket = ss.accept();
-                new ClientHandler(cliSocket).start();
                 new StringReceiver(cliSocket).start();
+                new ClientHandler(cliSocket).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
