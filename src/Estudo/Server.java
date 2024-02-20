@@ -11,34 +11,40 @@ import java.util.List;
 
 /* 1 STREAM --> Thread Sender (Send), Thread Server (New Connections)
  * 2 STREAMS --> Thread Cliente (Receive) , Thread Sender (Send), Thread Server (New Connections)
- * 
- * 
- * 
- * 
  */
 
-public class Server {
+public class Server extends Thread {
 
+    // ATRIBUTOS
+    // ServerSocket, list ins e outs = Collections.synchronizedList(new List)
     private ServerSocket ss;
     List<ObjectOutputStream> outs = Collections.synchronizedList(new ArrayList<ObjectOutputStream>());
     List<ObjectInputStream> ins = Collections.synchronizedList(new ArrayList<ObjectInputStream>());
 
-    public Server() throws IOException {
-        ss = new ServerSocket(8081);
-    }
-
-    public static void main(String[] args) throws IOException {
+    // CONSTRUTOR: criar server socket, catch: IOException
+    public Server() {
         try {
-            Server server = new Server();
-            server.startServer();
+            ss = new ServerSocket(8081);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
-    public void startServer() throws IOException {
+    // MAIN: criar Server e correr thread
+    public static void main(String[] args) throws IOException {
+        Server server = new Server();
+        server.run();
+    }
+
+    // RUN:
+    // Num while criar socket = ss.accept();
+    // Criar threads para in e out com a socket e inciar
+    // catch IOException
+    @Override
+    public void run() {
         try {
-            while (true) {
+            while (!Thread.interrupted()) {
                 Socket cliSocket = ss.accept();
                 new StringReceiver(cliSocket).start();
                 new ClientHandler(cliSocket).start();
@@ -48,10 +54,15 @@ public class Server {
         }
     }
 
+    // OUT CLASS
     public class ClientHandler extends Thread {
 
+        // ATRIBUTOS:
+        // ObjectOutPutStream
         ObjectOutputStream out;
 
+        // CONSTUTOR criar canal out e adicionar a lista de outs
+        // catch: IOException
         public ClientHandler(Socket s) throws IOException {
             try {
                 out = new ObjectOutputStream(s.getOutputStream());
@@ -61,25 +72,39 @@ public class Server {
             }
         }
 
+        // RUN:
+        // num while enviar outs = out.writeObject(), out.flush()
+        // catch IOException, InterrupptedException
         @Override
         public void run() {
-            try {
-                while (true) {
+
+            while (!Thread.interrupted()) {
+                try {
                     System.out.println("Server Pacote enviado");
-                    out.writeObject("Server Pacote recebido");
-                    out.flush();
+                    for (ObjectOutputStream out : outs) {
+                        out.writeObject("Server Pacote recebido");
+                        out.flush();
+                    }
                     Thread.sleep(2000);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
 
+    // IN CLASS
     public class StringReceiver extends Thread {
 
         ObjectInputStream in;
 
+        // CONSTRUTOR:
+        // criar canal in = new InputObjectStream(socket.getInputStream())
+        // Adicionar a lista de ins
+        // catch: IOException
         public StringReceiver(Socket socket) {
             try {
                 in = new ObjectInputStream(socket.getInputStream());
@@ -89,14 +114,19 @@ public class Server {
             }
         }
 
+        // RUN:
+        // while for (ObjectInputStream a : ins)
+        // catch IOExcepion, ClassNotFoundException
         @Override
         public void run() {
             try {
-                while (!ss.isClosed()) {
+                while (!Thread.interrupted()) {
                     for (ObjectInputStream a : ins)
                         System.out.println((String) a.readObject());
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
