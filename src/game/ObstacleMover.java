@@ -52,17 +52,10 @@ public class ObstacleMover extends Thread implements Serializable {
 					Thread.sleep(Obstacle.OBSTACLE_MOVE_INTERVAL);
 				}
 
-				try {
-					System.out.println(board.getBarrier());
-					board.getBarrier().await();
-				} catch (InterruptedException | BrokenBarrierException e) {
-				}
+				board.getBarrier().await();
 
-			} catch (InterruptedException e) {
+			} catch (InterruptedException | BrokenBarrierException e) {
 				// Thread interrupted
-			} catch (BrokenBarrierException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
