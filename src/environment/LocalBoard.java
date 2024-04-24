@@ -31,13 +31,12 @@ public class LocalBoard extends Board {
 
 		addObstacles(NUM_OBSTACLES);
 		this.barrier = new CyclicBarrier(3, new BarrierAction());
-		obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
-		for (Obstacle obstacle : obstacles) { 
+		obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES, barrier);
+		for (Obstacle obstacle : obstacles) {
 			obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
 		}
 		addGoal();
 	}
-
 
 	public void addPlayer(Snake a) {
 		snakes.add(a);
@@ -69,18 +68,18 @@ public class LocalBoard extends Board {
 		return null;
 	}
 
-	public Killer addKiller(){
+	public Killer addKiller() {
 		Killer killer = new Killer();
 		return killer;
 	}
 
 	private class BarrierAction implements Runnable {
-        @Override
-        public void run() {
-				addKiller();
-                System.out.println("CRIEI UM KILLER");
-                
-        }
-    }
+		@Override
+		public void run() {
+			addKiller();
+			System.out.println("CRIEI UM KILLER");
+
+		}
+	}
 
 }

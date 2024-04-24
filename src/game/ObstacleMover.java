@@ -1,6 +1,7 @@
 package game;
 
 import java.io.Serializable;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,23 +17,24 @@ import environment.Board;
 
 public class ObstacleMover extends Thread implements Serializable {
 
-	private transient Board board;
+	private transient static Board board;
+	CyclicBarrier barrier;
 	private transient ExecutorService service;
 
-	public ObstacleMover(Board board, int num) {
+	public ObstacleMover(Board board, int num, CyclicBarrier barrier) {
 		super();
-		this.board = board;
+		ObstacleMover.board = board;
 		service = Executors.newFixedThreadPool(num);
+		this.barrier = barrier;
 	}
 
 	public ExecutorService getService() {
 		return service;
 	}
 
-	public Board getBoard() {
+	public static Board getBoard() {
 		return board;
 	}
-
 
 	public static class Task implements Runnable {
 
@@ -47,27 +49,25 @@ public class ObstacleMover extends Thread implements Serializable {
 			try {
 				Thread.sleep(4000);
 				while (!Thread.interrupted()) {
-					obstacle.move();
+					if (obstacle.getRemainingMoves() != 0) {
+						obstacle.move();
+					} else {
+						try {
+							System.out.println(board);
+							board.getBarrier().await();
+						} catch (InterruptedException | BrokenBarrierException e) {
+						}
+					}
+
 					Thread.sleep(Obstacle.OBSTACLE_MOVE_INTERVAL);
-					System.out.println("movi");
 				}
 			} catch (InterruptedException e) {
 				// Thread interrupted
+			} catch (BrokenBarrierException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
-
-	@Override
-    public void run() {
-        try {
-            while (!Thread.interrupted()) {
-				System.out.println("entrei");
-				this.board.getBarrier().await();
-				System.out.println("passei");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
 }

@@ -1,5 +1,7 @@
 package game;
 
+import java.util.concurrent.BrokenBarrierException;
+
 import environment.Board;
 import environment.BoardPosition;
 
@@ -49,20 +51,19 @@ public class Obstacle extends GameElement {
 		return possible;
 	}
 
-	public void move() throws InterruptedException {
-		if (remainingMoves != 0) {
-			BoardPosition future = getNewObstaclePos();
+	public void move() throws InterruptedException, BrokenBarrierException {
 
-			// System.out.println(
-			// "OBS: " + this.toString() + "Current: " + current.toString() + "Future: " +
-			// future.toString());
+		BoardPosition future = getNewObstaclePos();
 
-			board.getCell(current).removeObstacle();
-			board.getCell(future).setGameElement(this);
-			board.setChanged();
-			this.current = future;
-			remainingMoves--;
+		// System.out.println(
+		// "OBS: " + this.toString() + "Current: " + current.toString() + "Future: " +
+		// future.toString());
 
-		}
+		board.getCell(current).removeObstacle();
+		board.getCell(future).setGameElement(this);
+		board.setChanged();
+		this.current = future;
+		remainingMoves--;
 	}
+
 }
