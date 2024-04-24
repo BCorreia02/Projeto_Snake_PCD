@@ -3,6 +3,9 @@ package environment;
 import game.Obstacle;
 import game.ObstacleMover;
 import game.Snake;
+import game.Killer;
+import java.util.concurrent.CyclicBarrier;
+
 import game.AutomaticSnake;
 
 /**
@@ -17,6 +20,7 @@ public class LocalBoard extends Board {
 	private static final int NUM_SNAKES = 2;
 	private static final int NUM_OBSTACLES = 10;
 	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 5;
+	private CyclicBarrier barrier;
 
 	public LocalBoard() {
 
@@ -26,14 +30,14 @@ public class LocalBoard extends Board {
 		}
 
 		addObstacles(NUM_OBSTACLES);
-
+		this.barrier = new CyclicBarrier(3, new BarrierAction());
 		obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
-
-		for (Obstacle obstacle : obstacles) { // Assuming 'obstacles' is a List of Obstacle
+		for (Obstacle obstacle : obstacles) { 
 			obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
 		}
 		addGoal();
 	}
+
 
 	public void addPlayer(Snake a) {
 		snakes.add(a);
@@ -64,5 +68,19 @@ public class LocalBoard extends Board {
 				return a;
 		return null;
 	}
+
+	public Killer addKiller(){
+		Killer killer = new Killer();
+		return killer;
+	}
+
+	private class BarrierAction implements Runnable {
+        @Override
+        public void run() {
+				addKiller();
+                System.out.println("CRIEI UM KILLER");
+                
+        }
+    }
 
 }

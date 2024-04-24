@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CyclicBarrier;
 
 import game.GameElement;
 import game.Goal;
@@ -32,6 +33,7 @@ public abstract class Board extends Observable implements Serializable {
 	protected LinkedList<Snake> snakes = new LinkedList<Snake>();
 	protected LinkedList<Obstacle> obstacles = new LinkedList<Obstacle>();
 	public ObstacleMover obstacleMover;
+	public CyclicBarrier barrier;
 	public int goalValue = 1;
 
 	public Board() {
@@ -43,6 +45,10 @@ public abstract class Board extends Observable implements Serializable {
 		}
 
 	}
+
+	public CyclicBarrier getBarrier() {
+        return barrier;
+    }
 
 	public boolean isObstacleAt(BoardPosition p) {
 		LinkedList<Obstacle> obstacles = this.getObstacles();
