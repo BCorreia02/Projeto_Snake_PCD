@@ -45,7 +45,7 @@ public class BoardComponent extends JComponent implements KeyListener {
 	public BoardComponent(Board board, boolean a) {
 		this.board = board;
 		this.isRemote = a;
-		obstacleImage = new ImageIcon(getClass().getResource("obstacle.png")).getImage();
+		obstacleImage = new ImageIcon(getClass().getResource("/obstacle.png")).getImage();
 		// Necessary for key listener
 		setFocusable(true);
 		addKeyListener(this);
