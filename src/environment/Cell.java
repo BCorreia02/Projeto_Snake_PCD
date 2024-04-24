@@ -66,7 +66,7 @@ public class Cell implements Serializable {
 			}
 
 			block();
-			cellOccupied.signalAll();
+			/* cellOccupied.signalAll(); */
 
 			if (snake != null) {
 				ocuppyingSnake = snake;

@@ -6,6 +6,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import environment.Board;
+import environment.LocalBoard;
 
 /**
  * 
@@ -17,15 +18,13 @@ import environment.Board;
 
 public class ObstacleMover extends Thread implements Serializable {
 
-	private transient static Board board;
-	CyclicBarrier barrier;
+	private transient static LocalBoard board;
 	private transient ExecutorService service;
 
-	public ObstacleMover(Board board, int num, CyclicBarrier barrier) {
+	public ObstacleMover(LocalBoard board, int num) {
 		super();
 		ObstacleMover.board = board;
 		service = Executors.newFixedThreadPool(num);
-		this.barrier = barrier;
 	}
 
 	public ExecutorService getService() {
@@ -48,19 +47,17 @@ public class ObstacleMover extends Thread implements Serializable {
 		public void run() {
 			try {
 				Thread.sleep(4000);
-				while (!Thread.interrupted()) {
-					if (obstacle.getRemainingMoves() != 0) {
-						obstacle.move();
-					} else {
-						try {
-							System.out.println(board);
-							board.getBarrier().await();
-						} catch (InterruptedException | BrokenBarrierException e) {
-						}
-					}
-
+				while (obstacle.getRemainingMoves() != 0) {
+					obstacle.move();
 					Thread.sleep(Obstacle.OBSTACLE_MOVE_INTERVAL);
 				}
+
+				try {
+					System.out.println(board.getBarrier());
+					board.getBarrier().await();
+				} catch (InterruptedException | BrokenBarrierException e) {
+				}
+
 			} catch (InterruptedException e) {
 				// Thread interrupted
 			} catch (BrokenBarrierException e) {

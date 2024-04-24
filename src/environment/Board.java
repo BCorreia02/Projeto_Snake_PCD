@@ -46,10 +46,6 @@ public abstract class Board extends Observable implements Serializable {
 
 	}
 
-	public CyclicBarrier getBarrier() {
-        return barrier;
-    }
-
 	public boolean isObstacleAt(BoardPosition p) {
 		LinkedList<Obstacle> obstacles = this.getObstacles();
 		for (Obstacle o : obstacles) {

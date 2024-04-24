@@ -29,11 +29,13 @@ public class LocalBoard extends Board {
 			snakes.add(snake);
 		}
 
-		addObstacles(NUM_OBSTACLES);
 		this.barrier = new CyclicBarrier(3, new BarrierAction());
-		obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES, barrier);
+
+		addObstacles(NUM_OBSTACLES);
+
+		obstacleMover = new ObstacleMover(this, NUM_SIMULTANEOUS_MOVING_OBSTACLES);
 		for (Obstacle obstacle : obstacles) {
-			obstacleMover.getService().execute(new ObstacleMover.Task(obstacle));
+			obstacleMover.getService().submit(new ObstacleMover.Task(obstacle));
 		}
 		addGoal();
 	}
@@ -59,6 +61,10 @@ public class LocalBoard extends Board {
 	@Override
 	public void handleKeyRelease() {
 		// do nothing... No keys relevant in local game
+	}
+
+	public CyclicBarrier getBarrier() {
+		return barrier;
 	}
 
 	public Obstacle getObstacle(Obstacle obstacle) {
