@@ -1,13 +1,18 @@
 package game;
 
 import environment.Board;
+import environment.BoardPosition;
 
 public class Killer extends GameElement {
 
-    private Board board;
+    private BoardPosition boardpos;
 
-    public Board getBoard() {
-        return board;
+    public Killer(BoardPosition boardpos){
+        this.boardpos=boardpos;
+    }
+
+    public BoardPosition getBoard() {
+        return boardpos;
     }
 
 }

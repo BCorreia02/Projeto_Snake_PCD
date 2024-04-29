@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CyclicBarrier;
 
 import game.GameElement;
 import game.Goal;
+import game.Killer;
 import game.Obstacle;
 import game.ObstacleMover;
 import game.Snake;
@@ -32,6 +34,7 @@ public abstract class Board extends Observable implements Serializable {
 	public static final int NUM_ROWS = 30;
 	protected LinkedList<Snake> snakes = new LinkedList<Snake>();
 	protected LinkedList<Obstacle> obstacles = new LinkedList<Obstacle>();
+	protected LinkedList<Killer> killers = new LinkedList<Killer>();
 	public ObstacleMover obstacleMover;
 	public CyclicBarrier barrier;
 	public int goalValue = 1;
@@ -44,6 +47,17 @@ public abstract class Board extends Observable implements Serializable {
 			}
 		}
 
+	}
+
+	public BoardPosition findFreeCell(){
+		Random random = new Random();
+		while(true) {
+			int x = random.nextInt(NUM_COLUMNS);
+			int y = random.nextInt(NUM_ROWS);
+			if (cells[x][y].getGameElement() == null && cells[x][y].getOcuppyingSnake() == null) { //Ver se nao escapou nenhuma condição (obstaclemover por ex.)
+				return new BoardPosition(x, y);
+			}
+		}
 	}
 
 	public boolean isObstacleAt(BoardPosition p) {

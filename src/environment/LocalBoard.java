@@ -74,9 +74,11 @@ public class LocalBoard extends Board {
 		return null;
 	}
 
-	public Killer addKiller() {
-		Killer killer = new Killer();
-		return killer;
+	public void addKiller() {
+		BoardPosition freePosition = findFreeCell();
+		Killer killer = new Killer(freePosition); //cria um killer numa celula livre da board
+		killers.add(killer); //adiciona ao array de killers da board
+		
 	}
 
 	private class BarrierAction implements Runnable {
