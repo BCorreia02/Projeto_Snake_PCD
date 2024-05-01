@@ -74,9 +74,19 @@ public class LocalBoard extends Board {
 		return null;
 	}
 
-	public Killer addKiller() {
+	public void addKiller() {
 		Killer killer = new Killer();
-		return killer;
+		getCell(getNewObstaclePos()).setGameElement(killer);
+		setChanged();
+	}
+
+	private BoardPosition getNewObstaclePos() {
+
+		BoardPosition possible = getRandomPosition();
+		if (getCell(possible).isOcupied() || getCell(possible).isOcupiedByGoal())
+			getNewObstaclePos();
+
+		return possible;
 	}
 
 	private class BarrierAction implements Runnable {
