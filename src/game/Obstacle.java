@@ -14,7 +14,15 @@ import environment.LocalBoard;
  *
  */
 
-public class Obstacle extends GameElement {
+/**
+ * 
+ *
+ * 
+ * @author bcorreia02
+ *
+ */
+
+ public class Obstacle extends GameElement {
 
 	private static final int NUM_MOVES = 2;
 	static final int OBSTACLE_MOVE_INTERVAL = 4000;
@@ -47,7 +55,7 @@ public class Obstacle extends GameElement {
 
 		BoardPosition possible = board.getRandomPosition();
 		if (board.getCell(possible).isOcupied() || board.getCell(possible).isOcupiedByGoal())
-			getNewObstaclePos();
+			return getNewObstaclePos();
 
 		return possible;
 	}
@@ -56,19 +64,16 @@ public class Obstacle extends GameElement {
 
 		BoardPosition future = getNewObstaclePos();
 
-		// System.out.println(
-		// "OBS: " + this.toString() + "Current: " + current.toString() + "Future: " +
-		// future.toString());
-
 		board.getCell(current).removeObstacle();
 		board.getCell(future).setGameElement(this);
 		board.setChanged();
 		this.current = future;
 		remainingMoves--;
+
 		if (remainingMoves == 0) {
 			// Esperar na barreira quando os movimentos acabarem
 			((LocalBoard) board).getBarrier().await();
+			((LocalBoard) board).decrementActiveObstacles(); // Decrementa o contador de obstáculos ativos
 		}
 	}
-
 }

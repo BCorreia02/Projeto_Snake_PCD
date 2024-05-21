@@ -17,7 +17,7 @@ import environment.Cell;
  *
  */
 
-public abstract class Snake extends Thread implements Serializable {
+ public abstract class Snake extends Thread implements Serializable {
 
 	private static final int DELTA_SIZE = 10;
 	protected LinkedList<Cell> cells = new LinkedList<>();
@@ -25,6 +25,7 @@ public abstract class Snake extends Thread implements Serializable {
 	private transient Board board;
 	protected transient int toIncrease = 0;
 	private transient Cell future;
+	private boolean isSnakeAlive = true; // Adiciona um atributo para verificar se a cobra está viva
 
 	public Snake(int id, Board board) {
 		this.id = id;
@@ -66,8 +67,12 @@ public abstract class Snake extends Thread implements Serializable {
 	protected void move() throws InterruptedException {
 		if (future != null) {
 			future.request(this);
-			if (this instanceof HumanSnake)
-				System.out.println("Passei o request");
+
+			if (future.getGameElement() instanceof Killer) {
+				// A cobra encontrou um Killer e morre
+				isSnakeAlive = false;
+				return;
+			}
 
 			cells.addFirst(future);
 
@@ -81,6 +86,10 @@ public abstract class Snake extends Thread implements Serializable {
 
 		}
 
+	}
+
+	public boolean isSnakeAlive() {
+		return isSnakeAlive;
 	}
 
 	public abstract boolean isHumanSnake();
@@ -127,24 +136,6 @@ public abstract class Snake extends Thread implements Serializable {
 		}
 
 	}
-
-	// public boolean canMoveTo(LinkedList<Cell> c, Cell next) {
-	// Cell head = c.getLast();
-
-	// if(head.getPosition().x == 0 && next.getPosition() ==
-	// head.getPosition().getCellLeft())
-	// return false;
-	// if(head.getPosition().x == board.NUM_COLUMNS-1 && next.getPosition() ==
-	// head.getPosition().getCellRight())
-	// return false;
-	// if(head.getPosition().y == 0 && next.getPosition() ==
-	// head.getPosition().getCellAbove())
-	// return false;
-	// if(head.getPosition().y == board.NUM_ROWS-1 && next.getPosition() ==
-	// head.getPosition().getCellBelow())
-	// return false;
-	// return true;
-	// }
 
 	protected void doInitialPositioning() throws InterruptedException {
 		// Random position on the first column, ensure it's unoccupied

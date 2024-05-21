@@ -5,10 +5,10 @@ import environment.BoardPosition;
 
 public class Killer extends GameElement {
     private Board board;
-	private BoardPosition current;
+    private BoardPosition current;
 
     public Killer(Board board){
-        this.board=board;
+        this.board = board;
     }
 
     public Board getBoard() {
@@ -16,11 +16,10 @@ public class Killer extends GameElement {
     }
 
     public void setCurrent(BoardPosition pos) {
-		this.current = pos;
-	}
+        this.current = pos;
+    }
 
-	public BoardPosition getCurrent() {
-		return current;
-	}
-
+    public BoardPosition getCurrent() {
+        return current;
+    }
 }

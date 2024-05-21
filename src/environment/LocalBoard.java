@@ -5,6 +5,7 @@ import game.ObstacleMover;
 import game.Snake;
 import game.Killer;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import game.AutomaticSnake;
 
@@ -18,12 +19,14 @@ import game.AutomaticSnake;
 public class LocalBoard extends Board {
 
 	private static final int NUM_SNAKES = 2;
-	private static final int NUM_OBSTACLES = 10;
-	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 5;
+	private static final int NUM_OBSTACLES = 5;
+	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 3;
 	private static final int BARRIER_PARTIES = 3; // Número de obstáculos que devem completar antes de adicionar um Killer
 	private CyclicBarrier barrier;
+	private AtomicInteger activeObstacles; // Contador de obstáculos ativos
 
 	public LocalBoard() {
+		activeObstacles = new AtomicInteger(NUM_OBSTACLES);
 
 		for (int i = 0; i < NUM_SNAKES; i++) {
 			AutomaticSnake snake = new AutomaticSnake(i, this);
@@ -89,11 +92,17 @@ public class LocalBoard extends Board {
 		return possible;
 	}
 
+	public void decrementActiveObstacles() {
+		activeObstacles.decrementAndGet();
+	}
+
 	class BarrierAction implements Runnable {
 		@Override
 		public void run() {
-			addKiller();
-			System.out.println("CRIEI UM KILLER");
+			if (activeObstacles.get() > 0) {
+				addKiller();
+				System.out.println("CRIEI UM KILLER");
+			}
 		}
 	}
 }

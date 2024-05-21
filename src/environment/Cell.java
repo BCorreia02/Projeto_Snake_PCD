@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import game.GameElement;
 import game.Goal;
+import game.Killer;
 import game.Obstacle;
 import game.Snake;
 
@@ -61,7 +62,7 @@ public class Cell implements Serializable {
 		lock.lock();
 		try {
 
-			while (this.isOcupied()) {
+			while (this.isOcupied() && !(this.getGameElement() instanceof Killer)) {
 				cellEmpty.await();
 			}
 
