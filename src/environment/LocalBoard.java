@@ -20,6 +20,7 @@ public class LocalBoard extends Board {
 	private static final int NUM_SNAKES = 2;
 	private static final int NUM_OBSTACLES = 10;
 	private static final int NUM_SIMULTANEOUS_MOVING_OBSTACLES = 5;
+	private static final int BARRIER_PARTIES = 3; // Número de obstáculos que devem completar antes de adicionar um Killer
 	private CyclicBarrier barrier;
 
 	public LocalBoard() {
@@ -29,7 +30,7 @@ public class LocalBoard extends Board {
 			snakes.add(snake);
 		}
 
-		this.barrier = new CyclicBarrier(3, new BarrierAction());
+		this.barrier = new CyclicBarrier(BARRIER_PARTIES, new BarrierAction());
 
 		addObstacles(NUM_OBSTACLES);
 
@@ -75,19 +76,24 @@ public class LocalBoard extends Board {
 	}
 
 	public void addKiller() {
-		BoardPosition freePosition = findFreeCell();
-		Killer killer = new Killer(freePosition); //cria um killer numa celula livre da board
-		killers.add(killer); //adiciona ao array de killers da board
-		
+		Killer killer = new Killer(this);
+		getCell(getNewObstaclePos()).setGameElement(killer);
+		setChanged();
 	}
 
-	private class BarrierAction implements Runnable {
+	private BoardPosition getNewObstaclePos() {
+		BoardPosition possible = getRandomPosition();
+		while (getCell(possible).isOcupied() || getCell(possible).isOcupiedByGoal()) {
+			possible = getRandomPosition();
+		}
+		return possible;
+	}
+
+	class BarrierAction implements Runnable {
 		@Override
 		public void run() {
 			addKiller();
 			System.out.println("CRIEI UM KILLER");
-
 		}
 	}
-
 }

@@ -4,15 +4,23 @@ import environment.Board;
 import environment.BoardPosition;
 
 public class Killer extends GameElement {
+    private Board board;
+	private BoardPosition current;
 
-    private BoardPosition boardpos;
-
-    public Killer(BoardPosition boardpos){
-        this.boardpos=boardpos;
+    public Killer(Board board){
+        this.board=board;
     }
 
-    public BoardPosition getBoard() {
-        return boardpos;
+    public Board getBoard() {
+        return board;
     }
+
+    public void setCurrent(BoardPosition pos) {
+		this.current = pos;
+	}
+
+	public BoardPosition getCurrent() {
+		return current;
+	}
 
 }

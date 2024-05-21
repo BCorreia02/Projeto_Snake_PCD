@@ -8,6 +8,7 @@ import environment.CellContent;
 import game.GameElement;
 import game.Goal;
 import game.HumanSnake;
+import game.Killer;
 import game.Obstacle;
 import game.Snake;
 import remote.RemoteBoard;
@@ -38,6 +39,7 @@ public class BoardComponent extends JComponent implements KeyListener {
 
 	private Board board;
 	private Image obstacleImage;
+	private Image killerImage;
 	private ConcurrentHashMap<BoardPosition, CellContent> boardMap;
 	private boolean isRemote;
 	private String lastDirection;
@@ -46,6 +48,7 @@ public class BoardComponent extends JComponent implements KeyListener {
 		this.board = board;
 		this.isRemote = a;
 		obstacleImage = new ImageIcon(getClass().getResource("/obstacle.png")).getImage();
+		killerImage=new ImageIcon(getClass().getResource("/killer.png")).getImage();
 		// Necessary for key listener
 		setFocusable(true);
 		addKeyListener(this);
@@ -94,7 +97,14 @@ public class BoardComponent extends JComponent implements KeyListener {
 							g.drawString(goal.getValue() + "",
 									(int) Math.round((cell.getPosition().x + 0.15) * CELL_WIDTH),
 									(int) Math.round((cell.getPosition().y + 0.9) * CELL_WIDTH));
-						}
+						} else if(cell.getGameElement() instanceof Killer) {
+						image = killerImage;
+						g.setColor(Color.BLACK);
+						g.drawImage(image, (int)Math.round(cell.getPosition().x* CELL_WIDTH),
+								(int)Math.round(cell.getPosition().y* CELL_WIDTH),
+								(int)Math.round(CELL_WIDTH),(int)Math.round(CELL_WIDTH), null);
+
+					} 
 					if (cell.isOcupiedBySnake()) {
 						// different color for human player...
 						if (cell.getOcuppyingSnake() instanceof HumanSnake)

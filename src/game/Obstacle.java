@@ -4,6 +4,7 @@ import java.util.concurrent.BrokenBarrierException;
 
 import environment.Board;
 import environment.BoardPosition;
+import environment.LocalBoard;
 
 /**
  * 
@@ -64,6 +65,10 @@ public class Obstacle extends GameElement {
 		board.setChanged();
 		this.current = future;
 		remainingMoves--;
+		if (remainingMoves == 0) {
+			// Esperar na barreira quando os movimentos acabarem
+			((LocalBoard) board).getBarrier().await();
+		}
 	}
 
 }
